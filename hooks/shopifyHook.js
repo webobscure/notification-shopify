@@ -1,6 +1,6 @@
 const axios = require('axios');
-const shopifyAccessToken = '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';
-const shopifyStore = 'onkron-greatbritain.myshopify.com';
+const shopifyAccessToken = process.env.SHOPIFY_ACCESS_TOKEN;
+const shopifyStore = process.env.SHOPIFY_STORE;
 
 // Создание вебхука
 axios.post(`https://${shopifyStore}/admin/api/2023-04/webhooks.json`, {

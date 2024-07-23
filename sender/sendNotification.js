@@ -9,7 +9,7 @@ const Subscription = require('../models/Subscription');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-const shopifyAccessToken = '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';
+const shopifyAccessToken = process.env.SHOPIFY_ACCESS_TOKEN;
 const shopifyStore = 'onkron-greatbritain.myshopify.com';
 
 // Настройка транспорта для отправки писем
