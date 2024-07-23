@@ -10,7 +10,7 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 const shopifyAccessToken = process.env.SHOPIFY_ACCESS_TOKEN;
-const shopifyStore = 'onkron-greatbritain.myshopify.com';
+const shopifyStore = process.env.SHOPIFY_STORE;
 
 // Настройка транспорта для отправки писем
 const transporter = nodemailer.createTransport({
