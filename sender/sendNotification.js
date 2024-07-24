@@ -76,14 +76,12 @@ async function checkProductAvailability() {
   
 
 // Планировщик задач для ежедневной проверки
-cron.schedule('* * * * *', () => {
-  console.log('running a task every minute');
-  checkProductAvailability();
+
+cron.schedule('0 0 * * *', () => {
+  console.log('Running daily product availability check...');
+checkProductAvailability();
 
 });
-// cron.schedule('0 0 * * *', () => {
-//   console.log('Running daily product availability check...');
-// });
 
 // Функция отправки уведомлений по электронной почте
 async function sendNotification(email, notification) {
