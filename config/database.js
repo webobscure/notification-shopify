@@ -1,13 +1,15 @@
 const { Sequelize } = require('sequelize');
 require('dotenv').config();
-const sequelize = new Sequelize( process.env.DB_NAME,
-    process.env.DB_USER,
-    process.env.DB_PASSWORD,
-    {
-      host: process.env.DB_HOST,
-      dialect: process.env.DB_DIALECT
+
+const sequelize = new Sequelize(process.env.DATABASE_PUBLIC_URL, {
+    dialect: 'postgres', // Указывайте явно диалект
+    protocol: 'postgres', // Укажите протокол, если необходимо
+    dialectOptions: {
+        ssl: {
+            require: true, // Если Railway требует SSL, установите этот флаг
+            rejectUnauthorized: false // Отключите проверку сертификатов (если это нужно)
+        }
     }
-);
+});
 
 module.exports = sequelize;
-   
