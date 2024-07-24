@@ -7,7 +7,7 @@ const sequelize = require('../config/database');
 const Subscription = require('../models/Subscription');
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT_CHECKER || 5000;
 
 const shopifyAccessToken = process.env.SHOPIFY_ACCESS_TOKEN;
 const shopifyStore = process.env.SHOPIFY_STORE;
