@@ -27,6 +27,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // Проверка наличия продукта
 async function checkProductAvailability() {
+    console.log("Checking prdoucts")
   try {
     const subscriptions = await Subscription.findAll();
     for (const subscription of subscriptions) {
