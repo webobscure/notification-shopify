@@ -86,7 +86,7 @@ checkProductAvailability();
 // Функция отправки уведомлений по электронной почте
 async function sendNotification(email, notification) {
   const mailOptions = {
-    from: 'onkronsoftware@gmail.com',
+    from: 'support@onkron.co.uk',
     to: email,
     subject: notification.subject,
     text: notification.text,
