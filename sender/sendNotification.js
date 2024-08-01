@@ -39,7 +39,6 @@ async function checkProductAvailability() {
       });
 
       const product = response.data.product;
-      console.log(`Product data received: ${JSON.stringify(product)}`);
 
       if (product) {
         const availableVariants = product.variants.filter(variant => variant.inventory_quantity > 0);
