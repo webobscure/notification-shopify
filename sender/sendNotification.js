@@ -32,7 +32,6 @@ async function checkProductAvailability() {
     const subscriptions = await Subscription.findAll();
     for (const subscription of subscriptions) {
       console.log(`Checking product availability for subscription: ${JSON.stringify(subscription)}`);
-      console.log(`https://${shopifyStore}/admin/api/2023-04/products/${subscription.inventory_id}.json`)
       const response = await axios.get(`https://${shopifyStore}/admin/api/2023-04/products/${subscription.inventory_id}.json`, {
         headers: {
           'X-Shopify-Access-Token': shopifyAccessToken
@@ -77,7 +76,7 @@ async function checkProductAvailability() {
 
 // Планировщик задач для ежедневной проверки
 
-cron.schedule('* * * * *', () => {
+cron.schedule('0 0 * * *', () => {
   console.log('Running daily product availability check...');
 checkProductAvailability();
 
