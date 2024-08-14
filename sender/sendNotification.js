@@ -49,11 +49,42 @@ async function checkProductAvailability() {
             subject: 'Product Notification',
             text: `Product ${subscription.sku} is now available on stock.`,
             html: `
-              <p>Dear ${subscription.nickname},</p>
-              <p>Product ${subscription.sku} is now available on stock.</p>
-              <p>Best regards,</p>
-              <p>Alex<br> <br>Onkron Technologies<br>
-            
+              <div style="font-family: Gilroy, Arial, sans-serif; text-align: center; width: 100%; max-width: 600px; margin: 0 auto;">
+        <!-- Логотип -->
+        <img src="https://cdn.shopify.com/s/files/1/0558/2277/8562/files/logo.png?v=1622659938" alt="onkron" width="300" style="display: block; margin: 0 auto;"/>
+    
+        <!-- Приветствие -->
+        <p style="margin-top: 20px;">Dear <span style="color: #1fcfca;font-weight: 600;">${subscription.nickname}</span>!</p>
+        
+        <!-- Основной текст -->
+        <p style="margin-top: 20px;">
+            Product <strong>${subscription.sku}</strong> is now available on stock.
+        
+        <!-- Заголовок -->
+        
+    
+        <p style="color: #1fcfca; margin-top: 30px;font-weight: 500;">Thank you for your continued support. We look forward to serving you through our new subscription service.</p>
+    
+        <!-- Заключение -->
+        <p style="margin-top: 20px;margin-right: 425px;text-align: left;">Best regards, <br>Alex<br>Onkron Technologies</p>
+    
+        <!-- Горизонтальная линия -->
+        <hr style="background-color: #1fcfca; height: 15px; border: none; width: 100%; max-width: 600px; margin: 30px auto;">
+    
+        <!-- Адрес -->
+        <h4 style="color: #1fcfca; margin-top: 20px;text-align: left;">Onkron UK</h4>
+        <p style="color: #1fcfca; margin-top: 20px;text-align: left;">71-75 Shelton Street</p>
+        <p style="color: #1fcfca; text-align: left;">London, England</p>
+        <p style="color: #1fcfca;text-align: left;">WC2H 9JQ</p>
+        <p style="color: #1fcfca; margin-bottom: 20px;text-align: left;">United Kingdom</p>
+    
+        <!-- Горизонтальная линия -->
+        <hr style="background-color: #1fcfca; height: 1px; border: none; width: 100%; max-width: 600px; margin: 20px auto;">
+    
+        <!-- Копирайт -->
+         
+            <p style="margin-top: 20px;text-align:right;">© 2024 Onkron UK</p>
+    </div>
             `
           }); 
 
