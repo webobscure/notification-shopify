@@ -36,24 +36,35 @@ app.post('/send-notification', async (req, res) => {
     subject: 'Product Notification',
     text: `Simplify Your Life with Our Product Subscription!`,
     html: `
-<p>Dear ${nickname},</p>
+<div style="display: flex;flex-direction: column;justify-content: center;align-items: center;font-family:'Gilroy';">
+        <img src="https://cdn.shopify.com/s/files/1/0558/2277/8562/files/logo_df2ad5da-7248-411b-8bb8-1259c40a7b02.png?v=1640545148"  alt="onkron" width="400"/>
+    <div style="display:ruby;">Dear <p style="color: #1fcfca">${nickname}</p>!</div>
 
-<p>We are thrilled to introduce our new subscription service for the ${sku}! This service ensures you have uninterrupted access to your favorite products without the need to reorder manually.</p>
+<p style="text-align: center;">We are thrilled to introduce our new subscription service for the <br> ${sku}! This service ensures you have uninterrupted access to your<br> favorite products without the need to reorder manually.</p>
 
-<h3>Why Subscribe?</h3>
-<ul>
-    <li><strong>Convenience:</strong> Enjoy regular deliveries of ${sku} right to your doorstep, perfectly timed to fit your schedule.</li>
-    <li><strong>Savings:</strong> Take advantage of exclusive discounts and special offers available only to our subscribers.</li>
-    <li><strong>Flexibility:</strong> Adjust your delivery frequency, skip a delivery, or cancel your subscription at any time with ease.</li>
-    <li><strong>Priority Service:</strong> Be the first to hear about new products, special events, and limited-time promotions.</li>
+<h3 style="color: #1fcfca">Why Subscribe?</h3>
+<ul style="list-style: none;">
+    <li><strong>Convenience:</strong><br> Enjoy regular deliveries of ${sku} right to your doorstep, perfectly<br> timed to fit your schedule.</li>
+    <li><strong>Savings:</strong><br> Take advantage of exclusive discounts and special offers available<br> only to our subscribers.</li>
+    <li><strong>Flexibility:</strong><br> Adjust your delivery frequency, skip a delivery, or cancel your<br> subscription at any time with ease.</li>
+    <li><strong>Priority Service:</strong><br> Be the first to hear about new products, special events, and limited-<br>time promotions.</li>
 </ul>
 
 
-<p>Thank you for your continued support. We look forward to serving you through our new subscription service.</p>
+<p style="color: #1fcfca;padding-left: 17px;">Thank you for your continued support. We look forward to serving<br> you through our new subscription service.</p>
 
-<p>Best regards,</p>
-<p>Alex<br>
-Onkron Technologies<br>`
+<p style="margin-right: 300px;">Best regards,Alex<br>
+Onkron Technologies</p>
+<hr style="background-color: #1fcfca; height: 15px; border: none; width: 600px;">
+<div style="white-space: break-spaces; margin-right: 160px;color: #1fcfca;">
+71-75 Shelton Street  London, England  
+London
+WC2H 9JQ
+United Kingdom
+</div>
+<hr style="background-color: #1fcfca; height: 1px; border: none; width: 600px;">
+<p style="margin-left: 470px;">© 2024 Onkron UK</p>
+    </div>`
   };
 
   try {
