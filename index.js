@@ -37,10 +37,10 @@ app.post('/send-notification', async (req, res) => {
     text: `Simplify Your Life with Our Product Subscription!`,
     html: `<div style="font-family: Gilroy, Arial, sans-serif; text-align: center; width: 100%; max-width: 600px; margin: 0 auto;">
         <!-- Логотип -->
-        <img src="https://cdn.shopify.com/s/files/1/0558/2277/8562/files/logo.png?v=1622659938" alt="onkron" width="400" style="display: block; margin: 0 auto;"/>
+        <img src="https://cdn.shopify.com/s/files/1/0558/2277/8562/files/logo.png?v=1622659938" alt="onkron" width="300" style="display: block; margin: 0 auto;"/>
     
         <!-- Приветствие -->
-        <p style="margin-top: 20px;">Dear <span style="color: #1fcfca;">${nickname}</span>!</p>
+        <p style="margin-top: 20px;">Dear <span style="color: #1fcfca;font-weight: 600;">${nickname}</span>!</p>
         
         <!-- Основной текст -->
         <p style="margin-top: 20px;">We are thrilled to introduce our new subscription service for the <strong>${sku}</strong>! This service ensures you have uninterrupted access to your favorite products without the need to reorder manually.</p>
@@ -50,10 +50,10 @@ app.post('/send-notification', async (req, res) => {
         
         <!-- Список преимуществ -->
         <ul style="list-style: none; padding: 0; margin: 20px auto; text-align: left;">
-            <li style="margin-bottom: 10px;"><strong>Convenience:</strong> Enjoy regular deliveries of ${sku} right to your doorstep, perfectly timed to fit your schedule.</li>
-            <li style="margin-bottom: 10px;"><strong>Savings:</strong> Take advantage of exclusive discounts and special offers available only to our subscribers.</li>
-            <li style="margin-bottom: 10px;"><strong>Flexibility:</strong> Adjust your delivery frequency, skip a delivery, or cancel your subscription at any time with ease.</li>
-            <li style="margin-bottom: 10px;"><strong>Priority Service:</strong> Be the first to hear about new products, special events, and limited-time promotions.</li>
+            <li style="margin-bottom: 10px;"><strong><p>Convenience:</p></strong> Enjoy regular deliveries of ${sku} right to your doorstep, perfectly timed to fit your schedule.</li>
+            <li style="margin-bottom: 10px;"><strong><p>Savings:</p></strong> Take advantage of exclusive discounts and special offers available only to our subscribers.</li>
+            <li style="margin-bottom: 10px;"><strong><p>Flexibility:</p></strong> Adjust your delivery frequency, skip a delivery, or cancel your subscription at any time with ease.</li>
+            <li style="margin-bottom: 10px;"><strong><p>Priority Service:</p></strong> Be the first to hear about new products, special events, and limited-time promotions.</li>
         </ul>
     
         <!-- Благодарность -->
@@ -66,16 +66,17 @@ app.post('/send-notification', async (req, res) => {
         <hr style="background-color: #1fcfca; height: 15px; border: none; width: 100%; max-width: 600px; margin: 30px auto;">
     
         <!-- Адрес -->
-        <p style="color: #1fcfca; margin-top: 20px;margin-right: 450px;">71-75 Shelton Street</p>
-        <p style="color: #1fcfca; margin-right: 470px;">London, England</p>
-        <p style="color: #1fcfca;margin-right: 515px;">WC2H 9JQ</p>
-        <p style="color: #1fcfca; margin-bottom: 20px;margin-right: 475px;">United Kingdom</p>
+        <p style="color: #1fcfca; margin-top: 20px;text-align: left;">71-75 Shelton Street</p>
+        <p style="color: #1fcfca; text-align: left;">London, England</p>
+        <p style="color: #1fcfca;text-align: left;">WC2H 9JQ</p>
+        <p style="color: #1fcfca; margin-bottom: 20px;text-align: left;">United Kingdom</p>
     
         <!-- Горизонтальная линия -->
         <hr style="background-color: #1fcfca; height: 1px; border: none; width: 100%; max-width: 600px; margin: 20px auto;">
     
         <!-- Копирайт -->
-        <p style="margin-top: 20px;">© 2024 Onkron UK</p>
+         
+            <p style="margin-top: 20px;text-align:right;">© 2024 Onkron UK</p>
     </div>`
   };
 
