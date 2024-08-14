@@ -60,7 +60,7 @@ app.post('/send-notification', async (req, res) => {
         <p style="color: #1fcfca; margin-top: 30px;font-weight: 500;">Thank you for your continued support. We look forward to serving you through our new subscription service.</p>
     
         <!-- Заключение -->
-        <p style="margin-top: 20px;margin-right: 425px;text-align: left;">Best regards, Alex<br>Onkron Technologies</p>
+        <p style="margin-top: 20px;text-align: left;">Best regards, Alex<br>Onkron Technologies</p>
     
         <!-- Горизонтальная линия -->
         <hr style="background-color: #1fcfca; height: 15px; border: none; width: 100%; max-width: 600px; margin: 30px auto;">
