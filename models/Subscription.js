@@ -18,6 +18,10 @@ const Subscription = sequelize.define('notifications', {
     type: DataTypes.STRING,
     allowNull: false
   },
+  country: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
   notification_sent: {
     type: DataTypes.BOOLEAN,
     defaultValue: false  // По умолчанию уведомление не отправлено
