@@ -27,7 +27,7 @@ app.use(express.json());
 app.use(cors());
 
 app.post('/send-notification', async (req, res) => {
-  const { email, sku, nickname, inventory_id } = req.body;
+  const { email, sku, nickname, inventory_id, country } = req.body;
   console.log(req.body); // Логирование данных
 
   const mailOptions = {
@@ -86,7 +86,7 @@ app.post('/send-notification', async (req, res) => {
       return res.status(400).json({ message: 'Subscription already exists for this email' });
     }
 
-    const subscription = new Subscription({ email, sku, nickname, inventory_id });
+    const subscription = new Subscription({ email, sku, nickname, inventory_id, country });
     await subscription.save();
     console.log('Subscription saved:', subscription); // Логирование сохраненной подписки
 

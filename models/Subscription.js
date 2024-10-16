@@ -20,7 +20,7 @@ const Subscription = sequelize.define('notifications', {
   },
   country: {
     type: DataTypes.STRING,
-    allowNull: true
+    allowNull: false
   },
   notification_sent: {
     type: DataTypes.BOOLEAN,
