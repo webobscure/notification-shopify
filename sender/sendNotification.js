@@ -28,10 +28,49 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // Проверка наличия продукта
 async function checkProductAvailability() {
     console.log("Checking prdoucts")
+
+
   try {
     const subscriptions = await Subscription.findAll();
     for (const subscription of subscriptions) {
       console.log(`Checking product availability for subscription: ${JSON.stringify(subscription)}`);
+
+      // // Определяем shopifyStore и shopifyAccessToken в зависимости от subscription.country
+      // let shopifyStore, shopifyAccessToken;
+
+      // switch (subscription.country) {
+      //   case 'US':
+      //     shopifyStore = 'your-us-store.myshopify.com';
+      //     shopifyAccessToken = 'your-us-access-token';
+      //     break;
+      //   case 'UK':
+      //     shopifyStore = 'your-uk-store.myshopify.com';
+      //     shopifyAccessToken = 'your-uk-access-token';
+      //     break;
+      //   case 'DE':
+      //     shopifyStore = 'your-de-store.myshopify.com';
+      //     shopifyAccessToken = 'your-de-access-token';
+      //     break;
+      //   case 'PL':
+      //     shopifyStore = 'your-pl-store.myshopify.com';
+      //     shopifyAccessToken = 'your-pl-access-token';
+      //     break;
+      //   case 'FR':
+      //     shopifyStore = 'your-fr-store.myshopify.com';
+      //     shopifyAccessToken = 'your-fr-access-token';
+      //     break;
+      //   case 'IT':
+      //     shopifyStore = 'your-it-store.myshopify.com';
+      //     shopifyAccessToken = 'your-it-access-token';
+      //     break;
+      //   case 'ES':
+      //     shopifyStore = 'your-es-store.myshopify.com';
+      //     shopifyAccessToken = 'your-es-access-token';
+      //     break;
+      //   default:
+      //     console.log(`No Shopify credentials configured for country: ${subscription.country}`);
+      //     continue; // Переходим к следующей подписке, если страна не определена
+      // }
       const response = await axios.get(`https://${shopifyStore}/admin/api/2023-04/products/${subscription.inventory_id}.json`, {
         headers: {
           'X-Shopify-Access-Token': shopifyAccessToken

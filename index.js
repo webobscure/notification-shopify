@@ -76,7 +76,7 @@ app.post('/send-notification', async (req, res) => {
     
         <!-- Копирайт -->
          
-            <p style="margin-top: 20px;text-align:right;">© 2024 Onkron UK</p>
+            <p style="margin-top: 20px;text-align:right;">© 2024 Onkron ${country}</p>
     </div>`
   };
 
