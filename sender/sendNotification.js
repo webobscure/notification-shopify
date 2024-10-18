@@ -40,32 +40,32 @@ async function checkProductAvailability() {
 
       // switch (subscription.country) {
       //   case 'US':
-      //     shopifyStore = 'your-us-store.myshopify.com';
-      //     shopifyAccessToken = 'your-us-access-token';
+      //     shopifyStore = process.env.SHOPIFY_US_STORE;
+      //     shopifyAccessToken = process.env.SHOPIFY_US_ACCESS_TOKEN;
       //     break;
       //   case 'UK':
-      //     shopifyStore = 'your-uk-store.myshopify.com';
-      //     shopifyAccessToken = 'your-uk-access-token';
+      //     shopifyStore = process.env.SHOPIFY_STORE;
+      //     shopifyAccessToken = process.env.SHOPIFY_ACCESS_TOKEN;
       //     break;
       //   case 'DE':
-      //     shopifyStore = 'your-de-store.myshopify.com';
-      //     shopifyAccessToken = 'your-de-access-token';
+      //     shopifyStore = process.env.SHOPIFY_DE_STORE;
+      //     shopifyAccessToken = process.env.SHOPIFY_DE_ACCESS_TOKEN;
       //     break;
       //   case 'PL':
-      //     shopifyStore = 'your-pl-store.myshopify.com';
-      //     shopifyAccessToken = 'your-pl-access-token';
+      //     shopifyStore = process.env.SHOPIFY_PL_STORE;
+      //     shopifyAccessToken = process.env.SHOPIFY_PL_ACCESS_TOKEN;
       //     break;
       //   case 'FR':
-      //     shopifyStore = 'your-fr-store.myshopify.com';
-      //     shopifyAccessToken = 'your-fr-access-token';
+      //     shopifyStore = process.env.SHOPIFY_FR_STORE;
+      //     shopifyAccessToken = process.env.SHOPIFY_FR_ACCESS_TOKEN;
       //     break;
       //   case 'IT':
-      //     shopifyStore = 'your-it-store.myshopify.com';
-      //     shopifyAccessToken = 'your-it-access-token';
+      //     shopifyStore = process.env.SHOPIFY_IT_STORE;
+      //     shopifyAccessToken = process.env.SHOPIFY_IT_ACCESS_TOKEN;
       //     break;
       //   case 'ES':
-      //     shopifyStore = 'your-es-store.myshopify.com';
-      //     shopifyAccessToken = 'your-es-access-token';
+      //     shopifyStore = process.env.SHOPIFY_ES_STORE;
+      //     shopifyAccessToken = process.env.SHOPIFY_ES_ACCESS_TOKEN;
       //     break;
       //   default:
       //     console.log(`No Shopify credentials configured for country: ${subscription.country}`);
