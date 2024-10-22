@@ -26,58 +26,58 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // Проверка наличия продукта
 async function checkProductAvailability() {
     console.log("Checking prdoucts")
-
-
-  try {
     const subscriptions = await Subscription.findAll();
-    for (const subscription of subscriptions) {
-      console.log(`Checking product availability for subscription: ${JSON.stringify(subscription)}`);
 
-      // // Определяем shopifyStore и shopifyAccessToken в зависимости от subscription.country
-      let shopifyStore, shopifyAccessToken;
+  const requests = subscriptions.map(async (subscription) => {
+    let shopifyStore, shopifyAccessToken;
 
-      switch (subscription.country) {
-        case 'US':
-          shopifyStore = process.env.SHOPIFY_US_STORE;
-          shopifyAccessToken = process.env.SHOPIFY_US_ACCESS_TOKEN;
-          break;
-        case 'UK':
-          shopifyStore = process.env.SHOPIFY_STORE;
-          shopifyAccessToken = process.env.SHOPIFY_ACCESS_TOKEN;
-          break;
-        case 'DE':
-          shopifyStore = process.env.SHOPIFY_DE_STORE;
-          shopifyAccessToken = process.env.SHOPIFY_DE_ACCESS_TOKEN;
-          break;
-        case 'PL':
-          shopifyStore = process.env.SHOPIFY_PL_STORE;
-          shopifyAccessToken = process.env.SHOPIFY_PL_ACCESS_TOKEN;
-          break;
-        case 'FR':
-          shopifyStore = process.env.SHOPIFY_FR_STORE;
-          shopifyAccessToken = process.env.SHOPIFY_FR_ACCESS_TOKEN;
-          break;
-        case 'IT':
-          shopifyStore = process.env.SHOPIFY_IT_STORE;
-          shopifyAccessToken = process.env.SHOPIFY_IT_ACCESS_TOKEN;
-          break;
-        case 'ES':
-          shopifyStore = process.env.SHOPIFY_ES_STORE;
-          shopifyAccessToken = process.env.SHOPIFY_ES_ACCESS_TOKEN;
-          break;
-        default:
-          console.log(`No Shopify credentials configured for country: ${subscription.country}`);
-          continue; // Переходим к следующей подписке, если страна не определена
-      }
-      console.log(`Checking sbusctiption from ${subscription.country}`)
+    switch (subscription.country) {
+      case 'US':
+        shopifyStore = process.env.SHOPIFY_US_STORE;
+        shopifyAccessToken = process.env.SHOPIFY_US_ACCESS_TOKEN;
+        break;
+      case 'UK':
+        shopifyStore = process.env.SHOPIFY_STORE;
+        shopifyAccessToken = process.env.SHOPIFY_ACCESS_TOKEN;
+        break;
+      case 'DE':
+        shopifyStore = process.env.SHOPIFY_DE_STORE;
+        shopifyAccessToken = process.env.SHOPIFY_DE_ACCESS_TOKEN;
+        break;
+      case 'PL':
+        shopifyStore = process.env.SHOPIFY_PL_STORE;
+        shopifyAccessToken = process.env.SHOPIFY_PL_ACCESS_TOKEN;
+        break;
+      case 'FR':
+        shopifyStore = process.env.SHOPIFY_FR_STORE;
+        shopifyAccessToken = process.env.SHOPIFY_FR_ACCESS_TOKEN;
+        break;
+      case 'IT':
+        shopifyStore = process.env.SHOPIFY_IT_STORE;
+        shopifyAccessToken = process.env.SHOPIFY_IT_ACCESS_TOKEN;
+        break;
+      case 'ES':
+        shopifyStore = process.env.SHOPIFY_ES_STORE;
+        shopifyAccessToken = process.env.SHOPIFY_ES_ACCESS_TOKEN;
+        break;
+      default:
+        console.log(`No Shopify credentials configured for country: ${subscription.country}`);
+        return; // Переходим к следующей подписке, если страна не определена
+    }
+    try {
       const response = await axios.get(`https://${shopifyStore}/admin/api/2023-04/products/${subscription.inventory_id}.json`, {
         headers: {
           'X-Shopify-Access-Token': shopifyAccessToken
         }
-      });
-
+      })} catch (error) {
+        if (error.response) {
+          console.error('Error fetching product data:', error.response.data);
+        } else {
+          console.error('Error fetching product data:', error.message);
+        }
+      }
+  
       const product = response.data.product;
-
       if (product) {
         const availableVariants = product.variants.filter(variant => variant.inventory_quantity > 0);
         console.log(`Available variants: ${JSON.stringify(availableVariants)}`);
@@ -121,7 +121,7 @@ async function checkProductAvailability() {
     
         <!-- Копирайт -->
          
-            <p style="margin-top: 20px;text-align:right;">© 2024 Onkron UK</p>
+            <p style="margin-top: 20px;text-align:right;">© 2024 Onkron ${subscription.country}</p>
     </div>
             `
           }); 
@@ -131,16 +131,11 @@ async function checkProductAvailability() {
         }
       } else {
         console.log(`Product with ID ${subscription.inventory_id} not found.`);
-      }
-    }
-  } catch (error) {
-    if (error.response) {
-      console.error('Error fetching product data:', error.response.data);
-    } else {
-      console.error('Error fetching product data:', error.message);
-    }
+      
   }
-}
+  // Выполняем все запросы одновременно
+await Promise.all(requests)
+})}
   
 
 // Планировщик задач для ежедневной проверки
@@ -174,4 +169,4 @@ async function sendNotification(email, notification) {
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 
-});
+})
