@@ -70,7 +70,7 @@ async function checkProductAvailability() {
           console.log(`Product with ID ${subscription.inventory_id} not found.`);
         }
       } catch (error) {
-        console.error(`Error fetching product for subscription ${subscription.inventory_id}:`, error.message);
+        console.error(`Error fetching product for subscription ${subscription.inventory_id} from ${subscription.country}:`, error.message);
       }
     });
 
