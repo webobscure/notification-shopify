@@ -207,8 +207,10 @@ function generateEmailContent(subscription, companyInfo) {
   
 
 // Планировщик задач для ежедневной проверки
-// */10 * * * * cron.schedule('0 0 * * * ', () => {
-cron.schedule('*/10 * * * *', () => {
+// cron.schedule('0 0 * * * ', () => {
+// cron.schedule('*/10 * * * *', () => {
+
+  cron.schedule('0 0 * * * ', () => {
   console.log('Running daily product availability check...');
 checkProductAvailability();
 
