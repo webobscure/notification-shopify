@@ -144,8 +144,8 @@ async function checkProductAvailability() {
   
 
 // Планировщик задач для ежедневной проверки
-
-cron.schedule('0 0 * * *', () => {
+// 0 0 * * * 
+cron.schedule('*/10 * * * *', () => {
   console.log('Running daily product availability check...');
 checkProductAvailability();
 
