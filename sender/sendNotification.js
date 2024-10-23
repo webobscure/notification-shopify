@@ -89,11 +89,10 @@ function getShopifyConfig(country) {
         shopifyStore: process.env.SHOPIFY_US_STORE,
         shopifyAccessToken: process.env.SHOPIFY_US_ACCESS_TOKEN,
         companyInfo: {
-          name: "Onkron US",
-          address: "1234 US Street",
-          city: "New York, NY",
-          postalCode: "10001",
-          country: "United States"
+          address: "16801 Addison Road",
+          city: "Addison TX",
+          postalCode: "Suite 124",
+          country: "75001"
         }
       };
     case 'UK':
@@ -101,7 +100,6 @@ function getShopifyConfig(country) {
         shopifyStore: process.env.SHOPIFY_STORE,
         shopifyAccessToken: process.env.SHOPIFY_ACCESS_TOKEN,
         companyInfo: {
-          name: "Onkron UK",
           address: "71-75 Shelton Street",
           city: "London",
           postalCode: "WC2H 9JQ",
@@ -114,11 +112,10 @@ function getShopifyConfig(country) {
         shopifyStore: process.env.SHOPIFY_DE_STORE,
         shopifyAccessToken: process.env.SHOPIFY_DE_ACCESS_TOKEN,
         companyInfo: {
-          name: "Onkron DE",
-          address: "Germany Address",
-          city: "Berlin",
-          postalCode: "10115",
-          country: "Germany"
+          address: "Büro und Lager",
+          city: "BMGG EUROPE GMBH",
+          postalCode: "Billbrookdeich 36",
+          country: "22113 Hamburg"
         }
       };
     case 'PL':
@@ -126,11 +123,10 @@ function getShopifyConfig(country) {
         shopifyStore: process.env.SHOPIFY_PL_STORE,
         shopifyAccessToken: process.env.SHOPIFY_PL_ACCESS_TOKEN,
         companyInfo: {
-          name: "Onkron PL",
-          address: "Poland Address",
-          city: "Warsaw",
-          postalCode: "00-001",
-          country: "Poland"
+          address: "Büro und Lager",
+          city: "BMGG EUROPE GMBH",
+          postalCode: "Billbrookdeich 36",
+          country: "22113 Hamburg"
         }
       };
     case 'FR':
@@ -138,11 +134,10 @@ function getShopifyConfig(country) {
         shopifyStore: process.env.SHOPIFY_FR_STORE,
         shopifyAccessToken: process.env.SHOPIFY_FR_ACCESS_TOKEN,
         companyInfo: {
-          name: "Onkron FR",
-          address: "France Address",
-          city: "Paris",
-          postalCode: "75001",
-          country: "France"
+          address: "Büro und Lager",
+          city: "BMGG EUROPE GMBH",
+          postalCode: "Billbrookdeich 36",
+          country: "22113 Hamburg"
         }
       };
     case 'IT':
@@ -150,11 +145,10 @@ function getShopifyConfig(country) {
         shopifyStore: process.env.SHOPIFY_IT_STORE,
         shopifyAccessToken: process.env.SHOPIFY_IT_ACCESS_TOKEN,
         companyInfo: {
-          name: "Onkron IT",
-          address: "Italy Address",
-          city: "Rome",
-          postalCode: "00100",
-          country: "Italy"
+          address: "Büro und Lager",
+          city: "BMGG EUROPE GMBH",
+          postalCode: "Billbrookdeich 36",
+          country: "22113 Hamburg"
         }
       };
     case 'ES':
@@ -162,11 +156,10 @@ function getShopifyConfig(country) {
         shopifyStore: process.env.SHOPIFY_ES_STORE,
         shopifyAccessToken: process.env.SHOPIFY_ES_ACCESS_TOKEN,
         companyInfo: {
-          name: "Onkron ES",
-          address: "Spain Address",
-          city: "Madrid",
-          postalCode: "28001",
-          country: "Spain"
+          address: "Büro und Lager",
+          city: "BMGG EUROPE GMBH",
+          postalCode: "Billbrookdeich 36",
+          country: "22113 Hamburg"
         }
       };
     default:
@@ -191,7 +184,6 @@ function generateEmailContent(subscription, companyInfo) {
       <!-- Горизонтальная линия -->
       <hr style="background-color: #1fcfca; height: 15px; border: none; width: 100%; max-width: 600px; margin: 30px auto;">
       <!-- Адрес -->
-      <h4 style="color: #1fcfca; margin-top: 20px;text-align: left;">${companyInfo.name}</h4>
       <p style="color: #1fcfca; margin-top: 20px;text-align: left;">${companyInfo.address}</p>
       <p style="color: #1fcfca; text-align: left;">${companyInfo.city}</p>
       <p style="color: #1fcfca;text-align: left;">${companyInfo.postalCode}</p>
