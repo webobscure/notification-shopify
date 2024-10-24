@@ -1,54 +1,81 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Test для отправки письма на подписку</title>
 </head>
+<style>
+    .error-block {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        border: 1px solid red;
+        border-radius: 15px;
+        max-width: 330px;
+    }
+
+    .detail-block {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        border: 1px solid #5ad0cb;
+        border-radius: 15px;
+        max-width: 330px;
+    }
+
+    .success {
+        width: 68px;
+        height: 68px;
+    }
+
+   
+
+    .detail-block__title {
+        color: #000;
+        font-size: 15px;
+        font-weight: 500;
+        margin-top: 1rem;
+    }
+
+    .error {
+        color: red;
+    }
+</style>
+
 <body>
-    <div style="font-family: Gilroy, Arial, sans-serif; text-align: center; width: 100%; max-width: 600px; margin: 0 auto;">
-        <!-- Логотип -->
-        <img src="https://cdn.shopify.com/s/files/1/0558/2277/8562/files/logo.png?v=1622659938" alt="onkron" width="300" style="display: block; margin: 0 auto;"/>
-    
-        <!-- Приветствие -->
-        <p style="margin-top: 20px;">Dear <span style="color: #1fcfca;font-weight: 600;">${nickname}</span>!</p>
-        
-        <!-- Основной текст -->
-        <p style="margin-top: 20px;">We are thrilled to introduce our new subscription service for the <strong>${sku}</strong>! This service ensures you have uninterrupted access to your favorite products without the need to reorder manually.</p>
-        
-        <!-- Заголовок -->
-        <h3 style="color: #1fcfca; margin-top: 30px;">Why Subscribe?</h3>
-        
-        <!-- Список преимуществ -->
-        <ul style="list-style: none; padding: 0; margin: 20px auto; text-align: left;">
-            <li ><strong><p>Convenience:</p></strong> Enjoy regular deliveries of ${sku} right to your doorstep, perfectly timed to fit your schedule.</li>
-            <li ><strong><p>Savings:</p></strong> Take advantage of exclusive discounts and special offers available only to our subscribers.</li>
-            <li ><strong><p>Flexibility:</p></strong> Adjust your delivery frequency, skip a delivery, or cancel your subscription at any time with ease.</li>
-            <li ><strong><p>Priority Service:</p></strong> Be the first to hear about new products, special events, and limited-time promotions.</li>
-        </ul>
-    
-        <!-- Благодарность -->
-        <p style="color: #1fcfca; margin-top: 30px;font-weight: 500;">Thank you for your continued support. We look forward to serving you through our new subscription service.</p>
-    
-        <!-- Заключение -->
-        <p style="margin-top: 20px;text-align: left;">Best regards, Alex<br>Onkron Technologies</p>
-    
-        <!-- Горизонтальная линия -->
-        <hr style="background-color: #1fcfca; height: 15px; border: none; width: 100%; max-width: 600px; margin: 30px auto;">
-    
-        <!-- Адрес -->
-        <p style="color: #1fcfca; margin-top: 20px;text-align: left;">71-75 Shelton Street</p>
-        <p style="color: #1fcfca; text-align: left;">London, England</p>
-        <p style="color: #1fcfca;text-align: left;">WC2H 9JQ</p>
-        <p style="color: #1fcfca; margin-bottom: 20px;text-align: left;">United Kingdom</p>
-    
-        <!-- Горизонтальная линия -->
-        <hr style="background-color: #1fcfca; height: 1px; border: none; width: 100%; max-width: 600px; margin: 20px auto;">
-    
-        <!-- Копирайт -->
-         
-            <p style="margin-top: 20px;text-align:right;">© 2024 Onkron UK</p>
+    <div class="detail-block">
+        <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" class="success">
+            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+            <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+            <g id="SVGRepo_iconCarrier">
+                <rect width="48" height="48" fill="white" fill-opacity="0.01"></rect>
+                <path
+                    d="M24 4L29.2533 7.83204L35.7557 7.81966L37.7533 14.0077L43.0211 17.8197L41 24L43.0211 30.1803L37.7533 33.9923L35.7557 40.1803L29.2533 40.168L24 44L18.7467 40.168L12.2443 40.1803L10.2467 33.9923L4.97887 30.1803L7 24L4.97887 17.8197L10.2467 14.0077L12.2443 7.81966L18.7467 7.83204L24 4Z"
+                    fill="#5ad0cb" stroke="#5ad0cb" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+                </path>
+                <path d="M17 24L22 29L32 19" stroke="white" stroke-width="4" stroke-linecap="round"
+                    stroke-linejoin="round"></path>
+            </g>
+        </svg>
+        <p class="detail-block__title">You have been successfully subscribed!</p>
     </div>
-    
+    <div class="error-block">
+        <svg width="68px" height="68px  " viewBox="0 0 1024 1024"  version="1.1"
+            xmlns="http://www.w3.org/2000/svg" fill="#000000">
+            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+            <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+            <g id="SVGRepo_iconCarrier">
+                <path
+                    d="M512 128C300.8 128 128 300.8 128 512s172.8 384 384 384 384-172.8 384-384S723.2 128 512 128z m0 85.333333c66.133333 0 128 23.466667 179.2 59.733334L273.066667 691.2C236.8 640 213.333333 578.133333 213.333333 512c0-164.266667 134.4-298.666667 298.666667-298.666667z m0 597.333334c-66.133333 0-128-23.466667-179.2-59.733334l418.133333-418.133333C787.2 384 810.666667 445.866667 810.666667 512c0 164.266667-134.4 298.666667-298.666667 298.666667z"
+                    fill="#D50000"></path>
+            </g>
+        </svg>
+        <p class="detail-block__title error">Error</p>
+    </div>
 </body>
+
 </html>
