@@ -117,7 +117,7 @@ app.post("/send-notification", async (req, res) => {
     }
   }
 
-  const shopifyConfig = getShopifyConfig(subscription.country);
+  const shopifyConfig = getShopifyConfig(country);
 
   const { companyInfo } = shopifyConfig;
 
