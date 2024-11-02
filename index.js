@@ -77,10 +77,10 @@ app.post("/send-notification", async (req, res) => {
         <hr style="background-color: #1fcfca; height: 15px; border: none; width: 100%; max-width: 600px; margin: 30px auto;">
     
         <!-- Адрес -->
-        <p style="color: #1fcfca; margin-top: 20px;text-align: left;">${companyInfo.address}</p>
-        <p style="color: #1fcfca; text-align: left;">${companyInfo.city}</p>
-        <p style="color: #1fcfca;text-align: left;">${companyInfo.postalCode}</p>
-        <p style="color: #1fcfca; margin-bottom: 20px;text-align: left;">${companyInfo.country}</p>
+        <p style="color: #1fcfca; margin-top: 20px;text-align: left;">16801 Addison Road</p>
+        <p style="color: #1fcfca; text-align: left;">Addison TX</p>
+        <p style="color: #1fcfca;text-align: left;">Suite 124</p>
+        <p style="color: #1fcfca; margin-bottom: 20px;text-align: left;">75001</p>
     
         <!-- Горизонтальная линия -->
         <hr style="background-color: #1fcfca; height: 1px; border: none; width: 100%; max-width: 600px; margin: 20px auto;">
@@ -133,10 +133,10 @@ app.post("/send-notification", async (req, res) => {
         <hr style="background-color: #1fcfca; height: 15px; border: none; width: 100%; max-width: 600px; margin: 30px auto;">
     
         <!-- Адрес -->
-        <p style="color: #1fcfca; margin-top: 20px;text-align: left;">${companyInfo.address}</p>
-        <p style="color: #1fcfca; text-align: left;">${companyInfo.city}</p>
-        <p style="color: #1fcfca;text-align: left;">${companyInfo.postalCode}</p>
-        <p style="color: #1fcfca; margin-bottom: 20px;text-align: left;">${companyInfo.country}</p>
+        <p style="color: #1fcfca; margin-top: 20px;text-align: left;">71-75 Shelton Street</p>
+        <p style="color: #1fcfca; text-align: left;">London</p>
+        <p style="color: #1fcfca;text-align: left;">WC2H 9JQ</p>
+        <p style="color: #1fcfca; margin-bottom: 20px;text-align: left;">United Kingdom</p>
     
         <!-- Горизонтальная линия -->
         <hr style="background-color: #1fcfca; height: 1px; border: none; width: 100%; max-width: 600px; margin: 20px auto;">
@@ -190,10 +190,10 @@ app.post("/send-notification", async (req, res) => {
         <hr style="background-color: #1fcfca; height: 15px; border: none; width: 100%; max-width: 600px; margin: 30px auto;">
     
         <!-- Адрес -->
-        <p style="color: #1fcfca; margin-top: 20px;text-align: left;">${companyInfo.address}</p>
-        <p style="color: #1fcfca; text-align: left;">${companyInfo.city}</p>
-        <p style="color: #1fcfca;text-align: left;">${companyInfo.postalCode}</p>
-        <p style="color: #1fcfca; margin-bottom: 20px;text-align: left;">${companyInfo.country}</p>
+        <p style="color: #1fcfca; margin-top: 20px;text-align: left;">Büro und Lager</p>
+        <p style="color: #1fcfca; text-align: left;">BMGG EUROPE GMBH"</p>
+        <p style="color: #1fcfca;text-align: left;">Billbrookdeich 36</p>
+        <p style="color: #1fcfca; margin-bottom: 20px;text-align: left;">22113 Hamburg</p>
     
         <!-- Горизонтальная линия -->
         <hr style="background-color: #1fcfca; height: 1px; border: none; width: 100%; max-width: 600px; margin: 20px auto;">
@@ -246,10 +246,10 @@ app.post("/send-notification", async (req, res) => {
         <hr style="background-color: #1fcfca; height: 15px; border: none; width: 100%; max-width: 600px; margin: 30px auto;">
     
         <!-- Адрес -->
-        <p style="color: #1fcfca; margin-top: 20px;text-align: left;">${companyInfo.address}</p>
-        <p style="color: #1fcfca; text-align: left;">${companyInfo.city}</p>
-        <p style="color: #1fcfca;text-align: left;">${companyInfo.postalCode}</p>
-        <p style="color: #1fcfca; margin-bottom: 20px;text-align: left;">${companyInfo.country}</p>
+        <p style="color: #1fcfca; margin-top: 20px;text-align: left;">Büro und Lager</p>
+        <p style="color: #1fcfca; text-align: left;">BMGG EUROPE GMBH"</p>
+        <p style="color: #1fcfca;text-align: left;">Billbrookdeich 36</p>
+        <p style="color: #1fcfca; margin-bottom: 20px;text-align: left;">22113 Hamburg</p>
     
         <!-- Горизонтальная линия -->
         <hr style="background-color: #1fcfca; height: 1px; border: none; width: 100%; max-width: 600px; margin: 20px auto;">
@@ -302,10 +302,10 @@ app.post("/send-notification", async (req, res) => {
         <hr style="background-color: #1fcfca; height: 15px; border: none; width: 100%; max-width: 600px; margin: 30px auto;">
     
         <!-- Адрес -->
-        <p style="color: #1fcfca; margin-top: 20px;text-align: left;">${companyInfo.address}</p>
-        <p style="color: #1fcfca; text-align: left;">${companyInfo.city}</p>
-        <p style="color: #1fcfca;text-align: left;">${companyInfo.postalCode}</p>
-        <p style="color: #1fcfca; margin-bottom: 20px;text-align: left;">${companyInfo.country}</p>
+        <p style="color: #1fcfca; margin-top: 20px;text-align: left;">Büro und Lager</p>
+        <p style="color: #1fcfca; text-align: left;">BMGG EUROPE GMBH"</p>
+        <p style="color: #1fcfca;text-align: left;">Billbrookdeich 36</p>
+        <p style="color: #1fcfca; margin-bottom: 20px;text-align: left;">22113 Hamburg</p>
     
         <!-- Горизонтальная линия -->
         <hr style="background-color: #1fcfca; height: 1px; border: none; width: 100%; max-width: 600px; margin: 20px auto;">
@@ -358,10 +358,10 @@ app.post("/send-notification", async (req, res) => {
         <hr style="background-color: #1fcfca; height: 15px; border: none; width: 100%; max-width: 600px; margin: 30px auto;">
     
         <!-- Адрес -->
-        <p style="color: #1fcfca; margin-top: 20px;text-align: left;">${companyInfo.address}</p>
-        <p style="color: #1fcfca; text-align: left;">${companyInfo.city}</p>
-        <p style="color: #1fcfca;text-align: left;">${companyInfo.postalCode}</p>
-        <p style="color: #1fcfca; margin-bottom: 20px;text-align: left;">${companyInfo.country}</p>
+        <p style="color: #1fcfca; margin-top: 20px;text-align: left;">Büro und Lager</p>
+        <p style="color: #1fcfca; text-align: left;">BMGG EUROPE GMBH"</p>
+        <p style="color: #1fcfca;text-align: left;">Billbrookdeich 36</p>
+        <p style="color: #1fcfca; margin-bottom: 20px;text-align: left;">22113 Hamburg</p>
     
         <!-- Горизонтальная линия -->
         <hr style="background-color: #1fcfca; height: 1px; border: none; width: 100%; max-width: 600px; margin: 20px auto;">
