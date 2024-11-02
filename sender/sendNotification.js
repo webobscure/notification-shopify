@@ -44,7 +44,7 @@ async function checkProductAvailability() {
       const { shopifyStore, shopifyAccessToken, companyInfo } = shopifyConfig;
 
       try {
-        const response = await axios.get(`https://${shopifyStore}/admin/api/2023-04/products/${subscription.inventory_id}.json`, {
+        const response = await axios.get(`https://${shopifyStore}/admin/api/2024-10/products/${subscription.inventory_id}.json`, {
           headers: { 'X-Shopify-Access-Token': shopifyAccessToken }
         });
 
