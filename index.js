@@ -414,10 +414,10 @@ app.post("/send-notification", async (req, res) => {
         <hr style="background-color: #1fcfca; height: 15px; border: none; width: 100%; max-width: 600px; margin: 30px auto;">
     
         <!-- Адрес -->
-        <p style="color: #1fcfca; margin-top: 20px;text-align: left;">${this.companyInfo.address}</p>
-        <p style="color: #1fcfca; text-align: left;">${this.companyInfo.city}</p>
-        <p style="color: #1fcfca;text-align: left;">${this.companyInfo.postalCode}</p>
-        <p style="color: #1fcfca; margin-bottom: 20px;text-align: left;">${this.companyInfo.country}</p>
+        <p style="color: #1fcfca; margin-top: 20px;text-align: left;">Büro und Lager</p>
+        <p style="color: #1fcfca; text-align: left;">BMGG EUROPE GMBH"</p>
+        <p style="color: #1fcfca;text-align: left;">Billbrookdeich 36</p>
+        <p style="color: #1fcfca; margin-bottom: 20px;text-align: left;">22113 Hamburg</p>
     
         <!-- Горизонтальная линия -->
         <hr style="background-color: #1fcfca; height: 1px; border: none; width: 100%; max-width: 600px; margin: 20px auto;">
