@@ -414,10 +414,10 @@ app.post("/send-notification", async (req, res) => {
         <hr style="background-color: #1fcfca; height: 15px; border: none; width: 100%; max-width: 600px; margin: 30px auto;">
     
         <!-- Адрес -->
-        <p style="color: #1fcfca; margin-top: 20px;text-align: left;">${companyInfo.address}</p>
-        <p style="color: #1fcfca; text-align: left;">${companyInfo.city}</p>
-        <p style="color: #1fcfca;text-align: left;">${companyInfo.postalCode}</p>
-        <p style="color: #1fcfca; margin-bottom: 20px;text-align: left;">${companyInfo.country}</p>
+        <p style="color: #1fcfca; margin-top: 20px;text-align: left;">${this.companyInfo.address}</p>
+        <p style="color: #1fcfca; text-align: left;">${this.companyInfo.city}</p>
+        <p style="color: #1fcfca;text-align: left;">${this.companyInfo.postalCode}</p>
+        <p style="color: #1fcfca; margin-bottom: 20px;text-align: left;">${this.companyInfo.country}</p>
     
         <!-- Горизонтальная линия -->
         <hr style="background-color: #1fcfca; height: 1px; border: none; width: 100%; max-width: 600px; margin: 20px auto;">
