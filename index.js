@@ -38,12 +38,6 @@ app.post("/send-notification", async (req, res) => {
         return {
           shopifyStore: process.env.SHOPIFY_US_STORE,
           shopifyAccessToken: process.env.SHOPIFY_US_ACCESS_TOKEN,
-          companyInfo: {
-            address: "16801 Addison Road",
-            city: "Addison TX",
-            postalCode: "Suite 124",
-            country: "75001",
-          },
           subject: "Product Notification",
           text: "Simplify Your Life with Our Product Subscription!",
           html: `<div style="font-family: Gilroy, Arial, sans-serif; text-align: center; width: 100%; max-width: 600px; margin: 0 auto;">
@@ -94,12 +88,6 @@ app.post("/send-notification", async (req, res) => {
         return {
           shopifyStore: process.env.SHOPIFY_STORE,
           shopifyAccessToken: process.env.SHOPIFY_ACCESS_TOKEN,
-          companyInfo: {
-            address: "71-75 Shelton Street",
-            city: "London",
-            postalCode: "WC2H 9JQ",
-            country: "United Kingdom",
-          },
             subject: "Product Notification",
             text: "Simplify Your Life with Our Product Subscription!",
             html: `<div style="font-family: Gilroy, Arial, sans-serif; text-align: center; width: 100%; max-width: 600px; margin: 0 auto;">
@@ -151,12 +139,6 @@ app.post("/send-notification", async (req, res) => {
         return {
           shopifyStore: process.env.SHOPIFY_DE_STORE,
           shopifyAccessToken: process.env.SHOPIFY_DE_ACCESS_TOKEN,
-          companyInfo: {
-            address: "Büro und Lager",
-            city: "BMGG EUROPE GMBH",
-            postalCode: "Billbrookdeich 36",
-            country: "22113 Hamburg",
-          },
             subject: "Produktbenachrichtigung",
             text: "Vereinfachen Sie Ihr Leben mit unserem Produktabonnement!",
             html: `<div style="font-family: Gilroy, Arial, sans-serif; text-align: center; width: 100%; max-width: 600px; margin: 0 auto;">
@@ -191,7 +173,7 @@ app.post("/send-notification", async (req, res) => {
     
         <!-- Адрес -->
         <p style="color: #1fcfca; margin-top: 20px;text-align: left;">Büro und Lager</p>
-        <p style="color: #1fcfca; text-align: left;">BMGG EUROPE GMBH"</p>
+        <p style="color: #1fcfca; text-align: left;">BMGG EUROPE GMBH</p>
         <p style="color: #1fcfca;text-align: left;">Billbrookdeich 36</p>
         <p style="color: #1fcfca; margin-bottom: 20px;text-align: left;">22113 Hamburg</p>
     
@@ -207,12 +189,6 @@ app.post("/send-notification", async (req, res) => {
         return {
           shopifyStore: process.env.SHOPIFY_PL_STORE,
           shopifyAccessToken: process.env.SHOPIFY_PL_ACCESS_TOKEN,
-          companyInfo: {
-            address: "Büro und Lager",
-            city: "BMGG EUROPE GMBH",
-            postalCode: "Billbrookdeich 36",
-            country: "22113 Hamburg",
-          },
             subject: "Powiadomienie o produkcie",
             text: "Uprość swoje życie dzięki naszej subskrypcji produktów!",
             html: `<div style="font-family: Gilroy, Arial, sans-serif; text-align: center; width: 100%; max-width: 600px; margin: 0 auto;">
@@ -247,7 +223,7 @@ app.post("/send-notification", async (req, res) => {
     
         <!-- Адрес -->
         <p style="color: #1fcfca; margin-top: 20px;text-align: left;">Büro und Lager</p>
-        <p style="color: #1fcfca; text-align: left;">BMGG EUROPE GMBH"</p>
+        <p style="color: #1fcfca; text-align: left;">BMGG EUROPE GMBH</p>
         <p style="color: #1fcfca;text-align: left;">Billbrookdeich 36</p>
         <p style="color: #1fcfca; margin-bottom: 20px;text-align: left;">22113 Hamburg</p>
     
@@ -263,12 +239,6 @@ app.post("/send-notification", async (req, res) => {
         return {
           shopifyStore: process.env.SHOPIFY_FR_STORE,
           shopifyAccessToken: process.env.SHOPIFY_FR_ACCESS_TOKEN,
-          companyInfo: {
-            address: "Büro und Lager",
-            city: "BMGG EUROPE GMBH",
-            postalCode: "Billbrookdeich 36",
-            country: "22113 Hamburg",
-          },
             subject: "Notification de produit",
             text: "Simplifiez-vous la vie avec notre abonnement aux produits!",
             html: `<div style="font-family: Gilroy, Arial, sans-serif; text-align: center; width: 100%; max-width: 600px; margin: 0 auto;">
@@ -303,7 +273,7 @@ app.post("/send-notification", async (req, res) => {
     
         <!-- Адрес -->
         <p style="color: #1fcfca; margin-top: 20px;text-align: left;">Büro und Lager</p>
-        <p style="color: #1fcfca; text-align: left;">BMGG EUROPE GMBH"</p>
+        <p style="color: #1fcfca; text-align: left;">BMGG EUROPE GMBH</p>
         <p style="color: #1fcfca;text-align: left;">Billbrookdeich 36</p>
         <p style="color: #1fcfca; margin-bottom: 20px;text-align: left;">22113 Hamburg</p>
     
@@ -319,12 +289,6 @@ app.post("/send-notification", async (req, res) => {
         return {
           shopifyStore: process.env.SHOPIFY_IT_STORE,
           shopifyAccessToken: process.env.SHOPIFY_IT_ACCESS_TOKEN,
-          companyInfo: {
-            address: "Büro und Lager",
-            city: "BMGG EUROPE GMBH",
-            postalCode: "Billbrookdeich 36",
-            country: "22113 Hamburg",
-          },
             subject: "Notifica del prodotto",
             text: "Semplificate la vostra vita con il nostro abbonamento ai prodotti!",
             html: `<div style="font-family: Gilroy, Arial, sans-serif; text-align: center; width: 100%; max-width: 600px; margin: 0 auto;">
@@ -359,7 +323,7 @@ app.post("/send-notification", async (req, res) => {
     
         <!-- Адрес -->
         <p style="color: #1fcfca; margin-top: 20px;text-align: left;">Büro und Lager</p>
-        <p style="color: #1fcfca; text-align: left;">BMGG EUROPE GMBH"</p>
+        <p style="color: #1fcfca; text-align: left;">BMGG EUROPE GMBH</p>
         <p style="color: #1fcfca;text-align: left;">Billbrookdeich 36</p>
         <p style="color: #1fcfca; margin-bottom: 20px;text-align: left;">22113 Hamburg</p>
     
@@ -375,12 +339,6 @@ app.post("/send-notification", async (req, res) => {
         return {
           shopifyStore: process.env.SHOPIFY_ES_STORE,
           shopifyAccessToken: process.env.SHOPIFY_ES_ACCESS_TOKEN,
-          companyInfo: {
-            address: "Büro und Lager",
-            city: "BMGG EUROPE GMBH",
-            postalCode: "Billbrookdeich 36",
-            country: "22113 Hamburg",
-          },
             subject: "Notificación del producto",
             text: "¡Simplifique su vida con nuestra suscripción de productos!",
             html: `<div style="font-family: Gilroy, Arial, sans-serif; text-align: center; width: 100%; max-width: 600px; margin: 0 auto;">
@@ -415,7 +373,7 @@ app.post("/send-notification", async (req, res) => {
     
         <!-- Адрес -->
         <p style="color: #1fcfca; margin-top: 20px;text-align: left;">Büro und Lager</p>
-        <p style="color: #1fcfca; text-align: left;">BMGG EUROPE GMBH"</p>
+        <p style="color: #1fcfca; text-align: left;">BMGG EUROPE GMBH</p>
         <p style="color: #1fcfca;text-align: left;">Billbrookdeich 36</p>
         <p style="color: #1fcfca; margin-bottom: 20px;text-align: left;">22113 Hamburg</p>
     
@@ -434,7 +392,7 @@ app.post("/send-notification", async (req, res) => {
 
   const shopifyConfig = getShopifyConfig(country);
 
-  const { companyInfo, subject, text, html } = shopifyConfig;
+  const { subject, text, html } = shopifyConfig;
 
   const mailOptions = {
     from: "support@onkron.co.uk",

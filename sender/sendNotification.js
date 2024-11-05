@@ -25,7 +25,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // Проверка наличия продукта
 async function checkProductAvailability() {
-  console.log("Checking products");
 
   try {
     const subscriptions = await Subscription.findAll();
@@ -41,7 +40,7 @@ async function checkProductAvailability() {
         return;
       }
 
-      const { shopifyStore, shopifyAccessToken, companyInfo } = shopifyConfig;
+      const { shopifyStore, shopifyAccessToken, subject, text, html } = shopifyConfig;
 
       try {
         const response = await axios.get(`https://${shopifyStore}/admin/api/2024-10/products/${subscription.inventory_id}.json`, {
@@ -55,12 +54,11 @@ async function checkProductAvailability() {
           console.log(`Available variants: ${JSON.stringify(availableVariants)}`);
 
           if (availableVariants.length > 0) {
-            const emailContent = generateEmailContent(subscription, companyInfo);
 
             await sendNotification(subscription.email, {
-              subject: 'Product Notification',
-              text: `Product ${subscription.sku} is now available in stock.`,
-              html: emailContent
+              subject: subject,
+              text: text,
+              html: html
             });
 
             // Удаляем подписку после отправки уведомления
@@ -82,95 +80,15 @@ async function checkProductAvailability() {
 }
 
 // Функция для получения конфигурации Shopify в зависимости от страны
-function getShopifyConfig(country) {
+function getShopifyConfig(country, subscription) {
   switch (country) {
     case 'US':
       return {
         shopifyStore: process.env.SHOPIFY_US_STORE,
         shopifyAccessToken: process.env.SHOPIFY_US_ACCESS_TOKEN,
-        companyInfo: {
-          address: "16801 Addison Road",
-          city: "Addison TX",
-          postalCode: "Suite 124",
-          country: "75001"
-        }
-      };
-    case 'UK':
-      return {
-        shopifyStore: process.env.SHOPIFY_STORE,
-        shopifyAccessToken: process.env.SHOPIFY_ACCESS_TOKEN,
-        companyInfo: {
-          address: "71-75 Shelton Street",
-          city: "London",
-          postalCode: "WC2H 9JQ",
-          country: "United Kingdom"
-        }
-      };
-    // Добавляем остальные страны по аналогии
-    case 'DE':
-      return {
-        shopifyStore: process.env.SHOPIFY_DE_STORE,
-        shopifyAccessToken: process.env.SHOPIFY_DE_ACCESS_TOKEN,
-        companyInfo: {
-          address: "Büro und Lager",
-          city: "BMGG EUROPE GMBH",
-          postalCode: "Billbrookdeich 36",
-          country: "22113 Hamburg"
-        }
-      };
-    case 'PL':
-      return {
-        shopifyStore: process.env.SHOPIFY_PL_STORE,
-        shopifyAccessToken: process.env.SHOPIFY_PL_ACCESS_TOKEN,
-        companyInfo: {
-          address: "Büro und Lager",
-          city: "BMGG EUROPE GMBH",
-          postalCode: "Billbrookdeich 36",
-          country: "22113 Hamburg"
-        }
-      };
-    case 'FR':
-      return {
-        shopifyStore: process.env.SHOPIFY_FR_STORE,
-        shopifyAccessToken: process.env.SHOPIFY_FR_ACCESS_TOKEN,
-        companyInfo: {
-          address: "Büro und Lager",
-          city: "BMGG EUROPE GMBH",
-          postalCode: "Billbrookdeich 36",
-          country: "22113 Hamburg"
-        }
-      };
-    case 'IT':
-      return {
-        shopifyStore: process.env.SHOPIFY_IT_STORE,
-        shopifyAccessToken: process.env.SHOPIFY_IT_ACCESS_TOKEN,
-        companyInfo: {
-          address: "Büro und Lager",
-          city: "BMGG EUROPE GMBH",
-          postalCode: "Billbrookdeich 36",
-          country: "22113 Hamburg"
-        }
-      };
-    case 'ES':
-      return {
-        shopifyStore: process.env.SHOPIFY_ES_STORE,
-        shopifyAccessToken: process.env.SHOPIFY_ES_ACCESS_TOKEN,
-        companyInfo: {
-          address: "Büro und Lager",
-          city: "BMGG EUROPE GMBH",
-          postalCode: "Billbrookdeich 36",
-          country: "22113 Hamburg"
-        }
-      };
-    default:
-      return null;
-  }
-}
-
-// Функция для генерации контента письма
-function generateEmailContent(subscription, companyInfo) {
-  return `
-    <div style="font-family: Gilroy, Arial, sans-serif; text-align: center; width: 100%; max-width: 600px; margin: 0 auto;">
+        subject: "Product Notification",
+        text: `Product ${subscription.sku} is now available in stock.`,
+        html: `<div style="font-family: Gilroy, Arial, sans-serif; text-align: center; width: 100%; max-width: 600px; margin: 0 auto;">
       <!-- Логотип -->
       <img src="https://cdn.shopify.com/s/files/1/0558/2277/8562/files/logo.png?v=1622659938" alt="Onkron" width="300" style="display: block; margin: 0 auto;" />
       <!-- Приветствие -->
@@ -184,17 +102,203 @@ function generateEmailContent(subscription, companyInfo) {
       <!-- Горизонтальная линия -->
       <hr style="background-color: #1fcfca; height: 15px; border: none; width: 100%; max-width: 600px; margin: 30px auto;">
       <!-- Адрес -->
-      <p style="color: #1fcfca; margin-top: 20px;text-align: left;">${companyInfo.address}</p>
-      <p style="color: #1fcfca; text-align: left;">${companyInfo.city}</p>
-      <p style="color: #1fcfca;text-align: left;">${companyInfo.postalCode}</p>
-      <p style="color: #1fcfca; margin-bottom: 20px;text-align: left;">${companyInfo.country}</p>
+      <p style="color: #1fcfca; margin-top: 20px;text-align: left;">16801 Addison Road</p>
+      <p style="color: #1fcfca; text-align: left;">Addison TX</p>
+      <p style="color: #1fcfca;text-align: left;">Suite 124</p>
+      <p style="color: #1fcfca; margin-bottom: 20px;text-align: left;">75001</p>
       <!-- Горизонтальная линия -->
       <hr style="background-color: #1fcfca; height: 1px; border: none; width: 100%; max-width: 600px; margin: 20px auto;">
       <!-- Копирайт -->
       <p style="margin-top: 20px;text-align:right;">© 2024 Onkron ${subscription.country}</p>
-    </div>
-  `;
+    </div>`
+      };
+    case 'UK':
+      return {
+        shopifyStore: process.env.SHOPIFY_STORE,
+        shopifyAccessToken: process.env.SHOPIFY_ACCESS_TOKEN,
+        subject: "Product Notification",
+        text: `Product ${subscription.sku} is now available in stock.`,
+        html: `<div style="font-family: Gilroy, Arial, sans-serif; text-align: center; width: 100%; max-width: 600px; margin: 0 auto;">
+      <!-- Логотип -->
+      <img src="https://cdn.shopify.com/s/files/1/0558/2277/8562/files/logo.png?v=1622659938" alt="Onkron" width="300" style="display: block; margin: 0 auto;" />
+      <!-- Приветствие -->
+      <p style="margin-top: 20px;">Dear <span style="color: #1fcfca;font-weight: 600;">${subscription.nickname}</span>!</p>
+      <!-- Основной текст -->
+      <p style="margin-top: 20px;">Product <strong>${subscription.sku}</strong> is now available in stock.</p>
+      <!-- Заголовок -->
+      <p style="color: #1fcfca; margin-top: 30px;font-weight: 500;">Thank you for your continued support. We look forward to serving you through our new subscription service.</p>
+      <!-- Заключение -->
+      <p style="margin-top: 20px;text-align: left;">Best regards, <br>Alex<br>Onkron Technologies</p>
+      <!-- Горизонтальная линия -->
+      <hr style="background-color: #1fcfca; height: 15px; border: none; width: 100%; max-width: 600px; margin: 30px auto;">
+      <!-- Адрес -->
+      <p style="color: #1fcfca; margin-top: 20px;text-align: left;">71-75 Shelton Street</p>
+      <p style="color: #1fcfca; text-align: left;">London</p>
+      <p style="color: #1fcfca;text-align: left;">WC2H 9JQ</p>
+      <p style="color: #1fcfca; margin-bottom: 20px;text-align: left;">United Kingdom</p>
+      <!-- Горизонтальная линия -->
+      <hr style="background-color: #1fcfca; height: 1px; border: none; width: 100%; max-width: 600px; margin: 20px auto;">
+      <!-- Копирайт -->
+      <p style="margin-top: 20px;text-align:right;">© 2024 Onkron ${subscription.country}</p>
+    </div>`
+      };
+    // Добавляем остальные страны по аналогии
+    case 'DE':
+      return {
+        shopifyStore: process.env.SHOPIFY_DE_STORE,
+        shopifyAccessToken: process.env.SHOPIFY_DE_ACCESS_TOKEN,
+        subject: "Produktbenachrichtigung",
+        text: `Das Produkt ${subscription.sku} ist jetzt auf Lager verfügbar.`,
+        html: `<div style="font-family: Gilroy, Arial, sans-serif; text-align: center; width: 100%; max-width: 600px; margin: 0 auto;">
+      <!-- Логотип -->
+      <img src="https://cdn.shopify.com/s/files/1/0558/2277/8562/files/logo.png?v=1622659938" alt="Onkron" width="300" style="display: block; margin: 0 auto;" />
+      <!-- Приветствие -->
+      <p style="margin-top: 20px;">Sehr geehrter <span style="color: #1fcfca;font-weight: 600;">${subscription.nickname}</span>!</p>
+      <!-- Основной текст -->
+      <p style="margin-top: 20px;">Das Produkt  <strong>${subscription.sku}</strong> ist ab sofort auf Lager verfügbar.</p>
+      <!-- Заголовок -->
+      <p style="color: #1fcfca; margin-top: 30px;font-weight: 500;"> Wir danken Ihnen herzlich für Ihre anhaltende Unterstützung und freuen uns darauf, Sie mit unserem neuen Abonnementservice betreuen zu dürfen.</p>
+      <!-- Заключение -->
+      <p style="margin-top: 20px;text-align: left;">Mit besten Grüßen, <br>Alex<br>Onkron Technologies</p>
+      <!-- Горизонтальная линия -->
+      <hr style="background-color: #1fcfca; height: 15px; border: none; width: 100%; max-width: 600px; margin: 30px auto;">
+      <!-- Адрес -->
+      <p style="color: #1fcfca; margin-top: 20px;text-align: left;">Büro und Lage</p>
+      <p style="color: #1fcfca; text-align: left;">BMGG EUROPE GMBH</p>
+      <p style="color: #1fcfca;text-align: left;">Billbrookdeich 36</p>
+      <p style="color: #1fcfca; margin-bottom: 20px;text-align: left;">22113 Hamburg</p>
+      <!-- Горизонтальная линия -->
+      <hr style="background-color: #1fcfca; height: 1px; border: none; width: 100%; max-width: 600px; margin: 20px auto;">
+      <!-- Копирайт -->
+      <p style="margin-top: 20px;text-align:right;">© 2024 Onkron ${subscription.country}</p>
+    </div>`
+      };
+    case 'PL':
+      return {
+        shopifyStore: process.env.SHOPIFY_PL_STORE,
+        shopifyAccessToken: process.env.SHOPIFY_PL_ACCESS_TOKEN,
+        subject: "Powiadomienie o produkcie",
+        text: `Produkt ${subscription.sku} jest już dostępny w magazynie.`,
+        html: `<div style="font-family: Gilroy, Arial, sans-serif; text-align: center; width: 100%; max-width: 600px; margin: 0 auto;">
+      <!-- Логотип -->
+      <img src="https://cdn.shopify.com/s/files/1/0558/2277/8562/files/logo.png?v=1622659938" alt="Onkron" width="300" style="display: block; margin: 0 auto;" />
+      <!-- Приветствие -->
+      <p style="margin-top: 20px;">Szanowny <span style="color: #1fcfca;font-weight: 600;">${subscription.nickname}</span>!</p>
+      <!-- Основной текст -->
+      <p style="margin-top: 20px;">Z przyjemnością informujemy, że produkt <strong>${subscription.sku}</strong> jest już dostępny w naszym magazynie.</p>
+      <!-- Заголовок -->
+      <p style="color: #1fcfca; margin-top: 30px;font-weight: 500;"> Serdecznie dziękujemy za Twoje stałe wsparcie i z niecierpliwością czekamy na możliwość obsługi w ramach naszej nowej usługi subskrypcyjnej.</p>
+      <!-- Заключение -->
+      <p style="margin-top: 20px;text-align: left;">Z wyrazami szacunku, <br>Alex<br>Onkron Technologies</p>
+      <!-- Горизонтальная линия -->
+      <hr style="background-color: #1fcfca; height: 15px; border: none; width: 100%; max-width: 600px; margin: 30px auto;">
+      <!-- Адрес -->
+      <p style="color: #1fcfca; margin-top: 20px;text-align: left;">Büro und Lage</p>
+      <p style="color: #1fcfca; text-align: left;">BMGG EUROPE GMBH</p>
+      <p style="color: #1fcfca;text-align: left;">Billbrookdeich 36</p>
+      <p style="color: #1fcfca; margin-bottom: 20px;text-align: left;">22113 Hamburg</p>
+      <!-- Горизонтальная линия -->
+      <hr style="background-color: #1fcfca; height: 1px; border: none; width: 100%; max-width: 600px; margin: 20px auto;">
+      <!-- Копирайт -->
+      <p style="margin-top: 20px;text-align:right;">© 2024 Onkron ${subscription.country}</p>
+    </div>`
+      };
+    case 'FR':
+      return {
+        shopifyStore: process.env.SHOPIFY_FR_STORE,
+        shopifyAccessToken: process.env.SHOPIFY_FR_ACCESS_TOKEN,
+        subject: "Notification de produit",
+        text: `Le produit ${subscription.sku} est maintenant disponible en stock.`,
+        html: `<div style="font-family: Gilroy, Arial, sans-serif; text-align: center; width: 100%; max-width: 600px; margin: 0 auto;">
+      <!-- Логотип -->
+      <img src="https://cdn.shopify.com/s/files/1/0558/2277/8562/files/logo.png?v=1622659938" alt="Onkron" width="300" style="display: block; margin: 0 auto;" />
+      <!-- Приветствие -->
+      <p style="margin-top: 20px;">Cher <span style="color: #1fcfca;font-weight: 600;">${subscription.nickname}</span>!</p>
+      <!-- Основной текст -->
+      <p style="margin-top: 20px;">Nous avons le plaisir de vous informer que le produit <strong>${subscription.sku}</strong> disponible en stock.</p>
+      <!-- Заголовок -->
+      <p style="color: #1fcfca; margin-top: 30px;font-weight: 500;"> Nous vous remercions sincèrement pour votre fidélité et sommes hâte de vous servir grâce à notre nouveau service d’abonnement.</p>
+      <!-- Заключение -->
+      <p style="margin-top: 20px;text-align: left;">Cordialement, <br>Alex<br>Onkron Technologies</p>
+      <!-- Горизонтальная линия -->
+      <hr style="background-color: #1fcfca; height: 15px; border: none; width: 100%; max-width: 600px; margin: 30px auto;">
+      <!-- Адрес -->
+      <p style="color: #1fcfca; margin-top: 20px;text-align: left;">Büro und Lage</p>
+      <p style="color: #1fcfca; text-align: left;">BMGG EUROPE GMBH</p>
+      <p style="color: #1fcfca;text-align: left;">Billbrookdeich 36</p>
+      <p style="color: #1fcfca; margin-bottom: 20px;text-align: left;">22113 Hamburg</p>
+      <!-- Горизонтальная линия -->
+      <hr style="background-color: #1fcfca; height: 1px; border: none; width: 100%; max-width: 600px; margin: 20px auto;">
+      <!-- Копирайт -->
+      <p style="margin-top: 20px;text-align:right;">© 2024 Onkron ${subscription.country}</p>
+    </div>`
+      };
+    case 'IT':
+      return {
+        shopifyStore: process.env.SHOPIFY_IT_STORE,
+        shopifyAccessToken: process.env.SHOPIFY_IT_ACCESS_TOKEN,
+        subject: "Notifica del prodotto",
+        text: `Il prodotto ${subscription.sku} è ora disponibile in magazzino.`,
+        html: `<div style="font-family: Gilroy, Arial, sans-serif; text-align: center; width: 100%; max-width: 600px; margin: 0 auto;">
+      <!-- Логотип -->
+      <img src="https://cdn.shopify.com/s/files/1/0558/2277/8562/files/logo.png?v=1622659938" alt="Onkron" width="300" style="display: block; margin: 0 auto;" />
+      <!-- Приветствие -->
+      <p style="margin-top: 20px;">Caro <span style="color: #1fcfca;font-weight: 600;">${subscription.nickname}</span>!</p>
+      <!-- Основной текст -->
+      <p style="margin-top: 20px;">Siamo lieti di informarvi che il prodotto <strong>${subscription.sku}</strong> è ora disponibile in magazzino.</p>
+      <!-- Заголовок -->
+      <p style="color: #1fcfca; margin-top: 30px;font-weight: 500;">Vi ringraziamo per il costante sostegno e siamo entusiasti di potervi assistere con il nostro nuovo servizio in abbonamento.</p>
+      <!-- Заключение -->
+      <p style="margin-top: 20px;text-align: left;">Distinti saluti, <br>Alex<br>Onkron Technologies</p>
+      <!-- Горизонтальная линия -->
+      <hr style="background-color: #1fcfca; height: 15px; border: none; width: 100%; max-width: 600px; margin: 30px auto;">
+      <!-- Адрес -->
+      <p style="color: #1fcfca; margin-top: 20px;text-align: left;">Büro und Lage</p>
+      <p style="color: #1fcfca; text-align: left;">BMGG EUROPE GMBH</p>
+      <p style="color: #1fcfca;text-align: left;">Billbrookdeich 36</p>
+      <p style="color: #1fcfca; margin-bottom: 20px;text-align: left;">22113 Hamburg</p>
+      <!-- Горизонтальная линия -->
+      <hr style="background-color: #1fcfca; height: 1px; border: none; width: 100%; max-width: 600px; margin: 20px auto;">
+      <!-- Копирайт -->
+      <p style="margin-top: 20px;text-align:right;">© 2024 Onkron ${subscription.country}</p>
+    </div>`
+      };
+    case 'ES':
+      return {
+        shopifyStore: process.env.SHOPIFY_ES_STORE,
+        shopifyAccessToken: process.env.SHOPIFY_ES_ACCESS_TOKEN,
+        subject: "Notificación del producto",
+        text: `El producto ${subscription.sku} ya está disponible.`,
+        html: `<div style="font-family: Gilroy, Arial, sans-serif; text-align: center; width: 100%; max-width: 600px; margin: 0 auto;">
+      <!-- Логотип -->
+      <img src="https://cdn.shopify.com/s/files/1/0558/2277/8562/files/logo.png?v=1622659938" alt="Onkron" width="300" style="display: block; margin: 0 auto;" />
+      <!-- Приветствие -->
+      <p style="margin-top: 20px;">Estimado <span style="color: #1fcfca;font-weight: 600;">${subscription.nickname}</span>!</p>
+      <!-- Основной текст -->
+      <p style="margin-top: 20px;">Nos complace informarle que el producto <strong>${subscription.sku}</strong> ya se encuentra disponible en stock.</p>
+      <!-- Заголовок -->
+      <p style="color: #1fcfca; margin-top: 30px;font-weight: 500;"> . Agradecemos sinceramente su constante apoyo y esperamos atenderle mediante nuestro nuevo servicio de suscripción.</p>
+      <!-- Заключение -->
+      <p style="margin-top: 20px;text-align: left;">Cordialmente, <br>Alex<br>Onkron Technologies</p>
+      <!-- Горизонтальная линия -->
+      <hr style="background-color: #1fcfca; height: 15px; border: none; width: 100%; max-width: 600px; margin: 30px auto;">
+      <!-- Адрес -->
+      <p style="color: #1fcfca; margin-top: 20px;text-align: left;">Büro und Lage</p>
+      <p style="color: #1fcfca; text-align: left;">BMGG EUROPE GMBH</p>
+      <p style="color: #1fcfca;text-align: left;">Billbrookdeich 36</p>
+      <p style="color: #1fcfca; margin-bottom: 20px;text-align: left;">22113 Hamburg</p>
+      <!-- Горизонтальная линия -->
+      <hr style="background-color: #1fcfca; height: 1px; border: none; width: 100%; max-width: 600px; margin: 20px auto;">
+      <!-- Копирайт -->
+      <p style="margin-top: 20px;text-align:right;">© 2024 Onkron ${subscription.country}</p>
+    </div>`
+      };
+    default:
+      return null;
+  }
 }
+
+
 
   
 
