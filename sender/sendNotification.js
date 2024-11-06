@@ -34,7 +34,7 @@ async function checkProductAvailability() {
       console.log(`Checking product availability for subscription: ${JSON.stringify(subscription)}`);
 
       // Определяем shopifyStore и shopifyAccessToken в зависимости от subscription.country
-      const shopifyConfig = getShopifyConfig(subscription.country);
+      const shopifyConfig = getShopifyConfig(subscription.country, subscription);
       if (!shopifyConfig) {
         console.log(`No Shopify credentials configured for country: ${subscription.country}`);
         return;
@@ -304,9 +304,7 @@ function getShopifyConfig(country, subscription) {
 
 // Планировщик задач для ежедневной проверки
 // cron.schedule('0 0 * * * ', () => {
-// cron.schedule('*/10 * * * *', () => {
-
-  cron.schedule('0 0 * * * ', () => {
+ cron.schedule('*/10 * * * *', () => {
   console.log('Running daily product availability check...');
 checkProductAvailability();
 
