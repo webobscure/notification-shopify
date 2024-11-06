@@ -303,12 +303,12 @@ function getShopifyConfig(country, subscription) {
   
 
 // Планировщик задач для ежедневной проверки
-// cron.schedule('0 0 * * * ', () => {
- cron.schedule('*/10 * * * *', () => {
+ cron.schedule('0 0 * * * ', () => {
+//  cron.schedule('*/10 * * * *', () => {
   console.log('Running daily product availability check...');
 checkProductAvailability();
 
-});
+ });
 
 // Функция отправки уведомлений по электронной почте
 async function sendNotification(email, notification) {
