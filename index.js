@@ -439,14 +439,14 @@ app.get("/subscription-stats", async (req, res) => {
   try {
     const [weeklyStats] = await sequelize.query(`
       SELECT sku, COUNT(*) AS total_count, 
-             COUNT(CASE WHEN createdAt >= NOW() - INTERVAL '7 days' THEN 1 END) AS weekly_count
+             COUNT(CASE WHEN notifications.createdAt >= NOW() - INTERVAL '7 days' THEN 1 END) AS weekly_count
       FROM notifications
       GROUP BY sku
     `);
 
     const [totalStats] = await sequelize.query(`
       SELECT COUNT(*) AS total_subscriptions,
-             COUNT(CASE WHEN createdAt >= NOW() - INTERVAL '7 days' THEN 1 END) AS subscriptions_last_week
+             COUNT(CASE WHEN notifications.createdAt >= NOW() - INTERVAL '7 days' THEN 1 END) AS subscriptions_last_week
       FROM notifications
     `);
 
