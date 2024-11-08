@@ -5,6 +5,7 @@ const sequelize = require("./config/database");
 const Subscription = require("./models/Subscription");
 const app = express();
 const PORT = process.env.PORT || 3000;
+const { Op, fn, col, literal } = require('sequelize');
 
 sequelize
   .sync({ alter: true })
@@ -448,29 +449,37 @@ app.get("/check-subscription", async (req, res) => {
 });
 app.get("/subscription-stats", async (req, res) => {
   try {
-    // Текущая дата минус 7 дней для фильтрации подписок за неделю
-    const oneWeekAgo = new Date();
-    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+    // Calculate the start and end dates for the previous week
+    const today = new Date();
+    const startOfWeek = new Date(today);
+    startOfWeek.setDate(today.getDate() - today.getDay() - 7); // Start of last full week
+    startOfWeek.setHours(0, 0, 0, 0); // Midnight at start of day
 
-    // Получение количества подписок за последнюю неделю и за всё время для каждого SKU
+    const endOfWeek = new Date(today);
+    endOfWeek.setDate(today.getDate() - today.getDay() - 1); // End of last full week
+    endOfWeek.setHours(23, 59, 59, 999); // End of the day
+
+    // Get total and weekly counts for each SKU
     const weeklyStats = await Subscription.findAll({
       attributes: [
         'sku',
-        [sequelize.fn('COUNT', sequelize.col('sku')), 'total_count'],
+        [fn('COUNT', col('sku')), 'total_count'],
         [
-          sequelize.fn('COUNT', sequelize.literal(`CASE WHEN "createdAt" >= '${oneWeekAgo.toISOString()}' THEN 1 END`)),
+          fn('COUNT', literal(`CASE WHEN "createdAt" BETWEEN '${startOfWeek.toISOString()}' AND '${endOfWeek.toISOString()}' THEN 1 END`)),
           'weekly_count'
         ],
       ],
       group: ['sku'],
     });
 
-    // Общее количество подписок и количество подписок за последнюю неделю
+    // Total subscription count for all time
     const totalSubscriptions = await Subscription.count();
+
+    // Subscription count for the last full week
     const subscriptionsLastWeek = await Subscription.count({
       where: {
         createdAt: {
-          [sequelize.gte]: oneWeekAgo,
+          [Op.between]: [startOfWeek, endOfWeek],
         },
       },
     });
