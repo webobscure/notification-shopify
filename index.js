@@ -435,18 +435,31 @@ app.post("/send-notification", async (req, res) => {
     res.status(500).json({ message: "Error saving subscription" });
   }
 });
-
-app.get("/check-subscription", async (req, res) => {
+app.get("/subscription-stats", async (req, res) => {
   try {
-    const [results, metadata] = await sequelize.query(
-      "SELECT * FROM notifications"
-    );
-    res.status(200).json(results);
+    const [weeklyStats] = await sequelize.query(`
+      SELECT sku, COUNT(*) AS total_count, 
+             COUNT(CASE WHEN createdAt >= NOW() - INTERVAL '7 days' THEN 1 END) AS weekly_count
+      FROM notifications
+      GROUP BY sku
+    `);
+
+    const [totalStats] = await sequelize.query(`
+      SELECT COUNT(*) AS total_subscriptions,
+             COUNT(CASE WHEN createdAt >= NOW() - INTERVAL '7 days' THEN 1 END) AS subscriptions_last_week
+      FROM notifications
+    `);
+
+    res.status(200).json({
+      totalStats: totalStats[0],
+      weeklyStats,
+    });
   } catch (error) {
-    console.error("Error checking subscriptions:", error);
-    res.status(500).json({ message: "Error checking subscriptions" });
+    console.error("Error getting subscription statistics:", error);
+    res.status(500).json({ message: "Error getting subscription statistics" });
   }
 });
+
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
