@@ -470,7 +470,7 @@ app.get("/subscription-stats", async (req, res) => {
     const subscriptionsLastWeek = await Subscription.count({
       where: {
         createdAt: {
-          [Op.gte]: oneWeekAgo,
+          [sequelize.gte]: oneWeekAgo,
         },
       },
     });
