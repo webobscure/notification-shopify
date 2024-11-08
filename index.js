@@ -435,23 +435,51 @@ app.post("/send-notification", async (req, res) => {
     res.status(500).json({ message: "Error saving subscription" });
   }
 });
+app.get("/check-subscription", async (req, res) => {
+  try {
+    const [results] = await sequelize.query(
+      "SELECT * FROM notifications"
+    );
+    res.status(200).json(results);
+  } catch (error) {
+    console.error("Error checking subscriptions:", error);
+    res.status(500).json({ message: "Error checking subscriptions" });
+  }
+});
 app.get("/subscription-stats", async (req, res) => {
   try {
-    const [weeklyStats] = await sequelize.query(`
-      SELECT sku, COUNT(*) AS total_count, 
-             COUNT(CASE WHEN notifications.createdAt >= NOW() - INTERVAL '7 days' THEN 1 END) AS weekly_count
-      FROM notifications
-      GROUP BY sku
-    `);
+    // Текущая дата минус 7 дней для фильтрации подписок за неделю
+    const oneWeekAgo = new Date();
+    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
 
-    const [totalStats] = await sequelize.query(`
-      SELECT COUNT(*) AS total_subscriptions,
-             COUNT(CASE WHEN notifications.createdAt >= NOW() - INTERVAL '7 days' THEN 1 END) AS subscriptions_last_week
-      FROM notifications
-    `);
+    // Получение количества подписок за последнюю неделю и за всё время для каждого SKU
+    const weeklyStats = await Subscription.findAll({
+      attributes: [
+        'sku',
+        [sequelize.fn('COUNT', sequelize.col('sku')), 'total_count'],
+        [
+          sequelize.fn('COUNT', sequelize.literal(`CASE WHEN "createdAt" >= '${oneWeekAgo.toISOString()}' THEN 1 END`)),
+          'weekly_count'
+        ],
+      ],
+      group: ['sku'],
+    });
+
+    // Общее количество подписок и количество подписок за последнюю неделю
+    const totalSubscriptions = await Subscription.count();
+    const subscriptionsLastWeek = await Subscription.count({
+      where: {
+        createdAt: {
+          [Op.gte]: oneWeekAgo,
+        },
+      },
+    });
 
     res.status(200).json({
-      totalStats: totalStats[0],
+      totalStats: {
+        total_subscriptions: totalSubscriptions,
+        subscriptions_last_week: subscriptionsLastWeek,
+      },
       weeklyStats,
     });
   } catch (error) {
