@@ -6,7 +6,6 @@ const Subscription = require("./models/Subscription");
 const app = express();
 const PORT = process.env.PORT || 3000;
 const { Op, fn, col, literal } = require('sequelize');
-const fetch = require('node-fetch');
 
 sequelize
   .sync({ alter: true })
