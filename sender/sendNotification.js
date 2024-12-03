@@ -14,8 +14,8 @@ const PORT = process.env.PORT_CHECKER || 5000;
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
-    user: 'support@onkron.co.uk',
-    pass: 'acbr zfpu anlr sibh'
+    user: process.env.USER_AGENT,
+    pass: process.env.USER_PASSWORD
   }
 });
 
@@ -313,7 +313,7 @@ checkProductAvailability();
 // Функция отправки уведомлений по электронной почте
 async function sendNotification(email, notification) {
   const mailOptions = {
-    from: 'support@onkron.co.uk',
+    from: process.env.USER_AGENT,
     to: email,
     subject: notification.subject,
     text: notification.text,
