@@ -6,6 +6,7 @@ const Subscription = require("./models/Subscription");
 const app = express();
 const PORT = process.env.PORT || 3000;
 const { Op, fn, col, literal } = require('sequelize');
+const fetch = require('node-fetch');
 
 sequelize
   .sync({ alter: true })
@@ -19,14 +20,17 @@ sequelize
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
-    user: "support@onkron.co.uk",
-    pass: "acbr zfpu anlr sibh",
+    user: process.env.USER_AGENT,
+    pass: process.env.USER_PASSWORD,
   },
 });
 
 // middleware for json
 app.use(express.json());
 app.use(cors());
+
+
+
 
 app.post("/send-notification", async (req, res) => {
   const { email, sku, nickname, inventory_id, country } = req.body;
@@ -396,7 +400,7 @@ app.post("/send-notification", async (req, res) => {
   const { subject, text, html } = shopifyConfig;
 
   const mailOptions = {
-    from: "support@onkron.co.uk",
+    from: process.env.USER_AGENT,
     to: email,
     subject: subject,
     text: text,
@@ -449,17 +453,16 @@ app.get("/check-subscription", async (req, res) => {
 });
 app.get("/subscription-stats", async (req, res) => {
   try {
-    // Calculate the start and end dates for the previous week
     const today = new Date();
     const startOfWeek = new Date(today);
-    startOfWeek.setDate(today.getDate() - today.getDay() - 7); // Start of last full week
-    startOfWeek.setHours(0, 0, 0, 0); // Midnight at start of day
+    startOfWeek.setDate(today.getDate() - today.getDay() - 7);
+    startOfWeek.setHours(0, 0, 0, 0);
 
     const endOfWeek = new Date(today);
-    endOfWeek.setDate(today.getDate() - today.getDay() - 1); // End of last full week
-    endOfWeek.setHours(23, 59, 59, 999); // End of the day
+    endOfWeek.setDate(today.getDate() - today.getDay() - 1);
+    endOfWeek.setHours(23, 59, 59, 999);
 
-    // Get total and weekly counts for each SKU
+    // Получаем статистику по SKU за последнюю неделю и общее количество подписок
     const weeklyStats = await Subscription.findAll({
       attributes: [
         'sku',
@@ -472,10 +475,7 @@ app.get("/subscription-stats", async (req, res) => {
       group: ['sku'],
     });
 
-    // Total subscription count for all time
     const totalSubscriptions = await Subscription.count();
-
-    // Subscription count for the last full week
     const subscriptionsLastWeek = await Subscription.count({
       where: {
         createdAt: {
@@ -484,13 +484,21 @@ app.get("/subscription-stats", async (req, res) => {
       },
     });
 
-    res.status(200).json({
+    // Формируем ответ
+    const statsData = {
       totalStats: {
         total_subscriptions: totalSubscriptions,
         subscriptions_last_week: subscriptionsLastWeek,
       },
       weeklyStats,
-    });
+    };
+
+    res.status(200).json(statsData);
+
+    // Отправляем ссылку в Bitrix24 после успешной генерации статистики
+    const link = 'https://notification-shopify-production.up.railway.app/subscription-stats';
+    await sendMessage(link);
+
   } catch (error) {
     console.error("Error getting subscription statistics:", error);
     res.status(500).json({ message: "Error getting subscription statistics" });

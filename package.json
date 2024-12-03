@@ -7,6 +7,7 @@
         "dotenv": "^16.4.5",
         "express": "^4.19.2",
         "node-cron": "^3.0.3",
+        "node-fetch": "^3.3.2",
         "nodemailer": "^6.9.13",
         "pg": "^8.12.0",
         "pg-hstore": "^2.3.4",
@@ -17,8 +18,8 @@
     "description": "Server for subscribtion",
     "main": "index.js",
     "scripts": {
-         "start": "concurrently \"node index.js\" \"node sender/sendNotification.js\"",
-    "test": "echo \"Error: no test specified\" && exit 1"
+        "start": "concurrently \"node index.js\" \"node sender/sendNotification.js\"",
+        "test": "echo \"Error: no test specified\" && exit 1"
     },
     "author": "",
     "license": "ISC"
