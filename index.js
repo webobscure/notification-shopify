@@ -494,9 +494,6 @@ app.get("/subscription-stats", async (req, res) => {
 
     res.status(200).json(statsData);
 
-    // Отправляем ссылку в Bitrix24 после успешной генерации статистики
-    const link = 'https://notification-shopify-production.up.railway.app/subscription-stats';
-    await sendMessage(link);
 
   } catch (error) {
     console.error("Error getting subscription statistics:", error);
