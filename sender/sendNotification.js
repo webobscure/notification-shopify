@@ -23,6 +23,8 @@ const transporter = nodemailer.createTransport({
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+
+
 // Проверка наличия продукта
 async function checkProductAvailability() {
 
@@ -322,6 +324,13 @@ async function sendNotification(email, notification) {
 
   transporter.sendMail(mailOptions, (error, info) => {
     if (error) {
+      transporter.sendMail({
+        from: process.env.USER_AGENT,
+        to: "sparkygino@gmail.com",
+        subject: "Error while fetching subscriptions",
+        text: "Error",
+        html: error
+      })
       console.error('Error sending email:', error);
     } else {
       console.log('Notification email sent:', info.response);

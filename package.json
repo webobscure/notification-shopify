@@ -14,13 +14,18 @@
         "sequelize": "^6.37.3"
     },
     "name": "notification-shopify",
+    "type": "module",
     "version": "1.0.0",
     "description": "Server for subscribtion",
     "main": "index.js",
     "scripts": {
         "start": "concurrently \"node index.js\" \"node sender/sendNotification.js\"",
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "test": "jest"
     },
     "author": "",
-    "license": "ISC"
+    "license": "ISC",
+    "devDependencies": {
+        "jest": "^29.7.0"
+    }
+    
 }
