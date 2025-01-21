@@ -14,7 +14,6 @@
         "sequelize": "^6.37.3"
     },
     "name": "notification-shopify",
-    "type": "module",
     "version": "1.0.0",
     "description": "Server for subscribtion",
     "main": "index.js",
