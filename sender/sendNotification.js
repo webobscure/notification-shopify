@@ -71,6 +71,11 @@ async function checkProductAvailability() {
         }
       } catch (error) {
         console.error(`Error fetching product for subscription ${subscription.inventory_id} from ${subscription.country}:`, error.message);
+        await sendNotification('sparkygino@gmail.com', {
+          subject: "Error fetching product",
+          text: "Error fetching product",
+          html: error.message
+        })
       }
     });
 
