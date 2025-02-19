@@ -25,66 +25,81 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 
 
-// Проверка наличия продукта
-async function checkProductAvailability() {
 
+async function delay(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function fetchWithRetry(url, headers, retries = 3, delayMs = 5000) {
+  for (let i = 0; i < retries; i++) {
+    try {
+      const response = await axios.get(url, { headers });
+      return response;
+    } catch (error) {
+      if (error.response?.status === 429) {
+        const retryAfter = error.response.headers['retry-after']; // Shopify может прислать время ожидания
+        const waitTime = retryAfter ? parseInt(retryAfter) * 1000 : delayMs;
+        console.warn(`Rate limit exceeded. Retrying in ${waitTime}ms...`);
+
+        if (i < retries - 1) {
+          await delay(waitTime);
+        } else {
+          throw new Error(`Failed after ${retries} attempts due to rate limit`);
+        }
+      } else {
+        throw error; // Прерываемся, если ошибка не 429
+      }
+    }
+  }
+}
+
+async function checkProductAvailability() {
   try {
     const subscriptions = await Subscription.findAll();
-    
-    // Массив промисов для параллельного выполнения запросов
-    const requests = subscriptions.map(async (subscription) => {
+
+    for (const subscription of subscriptions) {
       console.log(`Checking product availability for subscription: ${JSON.stringify(subscription)}`);
 
-      // Определяем shopifyStore и shopifyAccessToken в зависимости от subscription.country
       const shopifyConfig = getShopifyConfig(subscription.country, subscription);
       if (!shopifyConfig) {
         console.log(`No Shopify credentials configured for country: ${subscription.country}`);
-        return;
+        continue;
       }
 
       const { shopifyStore, shopifyAccessToken, subject, text, html } = shopifyConfig;
 
       try {
-        const response = await axios.get(`https://${shopifyStore}/admin/api/2024-10/products/${subscription.inventory_id}.json`, {
-          headers: { 'X-Shopify-Access-Token': shopifyAccessToken }
-        });
+        const response = await fetchWithRetry(
+          `https://${shopifyStore}/admin/api/2024-10/products/${subscription.inventory_id}.json`,
+          { 'X-Shopify-Access-Token': shopifyAccessToken }
+        );
 
         const product = response.data.product;
-
         if (product) {
           const availableVariants = product.variants.filter(variant => variant.inventory_quantity > 0);
           console.log(`Available variants: ${JSON.stringify(availableVariants)}`);
 
           if (availableVariants.length > 0) {
-
-            await sendNotification(subscription.email, {
-              subject: subject,
-              text: text,
-              html: html
-            });
-
-            // Удаляем подписку после отправки уведомления
+            await sendNotification(subscription.email, { subject, text, html });
             await subscription.destroy();
           }
         } else {
           console.log(`Product with ID ${subscription.inventory_id} not found.`);
         }
       } catch (error) {
-        console.error(`Error fetching product for subscription ${subscription.inventory_id} from ${subscription.country}:`, error.message);
+        console.error(`Error fetching product for subscription ${subscription.inventory_id}:`, error.message);
         await sendNotification('sparkygino@gmail.com', {
           subject: "Error fetching product",
           text: "Error fetching product",
           html: error.message
-        })
+        });
       }
-    });
-
-    // Ожидание выполнения всех запросов
-    await Promise.all(requests);
+    }
   } catch (error) {
     console.error('Error fetching subscriptions:', error.message);
   }
 }
+
 
 // Функция для получения конфигурации Shopify в зависимости от страны
 function getShopifyConfig(country, subscription) {
