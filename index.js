@@ -501,6 +501,24 @@ app.get("/subscription-stats", async (req, res) => {
   }
 });
 
+app.get("/all-subs", async (req, res) => {
+    try {
+    const [results] = await sequelize.query("SELECT sku, country FROM notifications");
+
+    if (!results.length) {
+      return res.status(200).send("Нет подписок.");
+    }
+
+    const textList = results
+      .map(({ sku, country }) => `${sku} - ${country}`)
+      .join("\n");
+
+    res.status(200).send(textList);
+  } catch (error) {
+    console.error("Error checking subscriptions:", error);
+    res.status(500).send("Ошибка при проверке подписок.");
+  }
+})
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
