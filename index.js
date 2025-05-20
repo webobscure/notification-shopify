@@ -6,7 +6,8 @@ const Subscription = require("./models/Subscription");
 const app = express();
 const PORT = process.env.PORT || 3000;
 const { Op, fn, col, literal } = require('sequelize');
-
+const fs = require("fs");
+const path = require("path");
 sequelize
   .sync({ alter: true })
   .then(() => {
@@ -502,12 +503,11 @@ app.get("/subscription-stats", async (req, res) => {
 });
 
 app.get("/all-subs", async (req, res) => {
-  try {
+   try {
     const [results] = await sequelize.query("SELECT sku, country FROM notifications");
 
     if (!results.length) {
-      res.setHeader("Content-Type", "text/plain; charset=utf-8");
-      return res.status(200).send("Статистика:\nНет подписок.");
+      return res.status(200).send("Нет подписок.");
     }
 
     // Сортировка по стране
@@ -517,22 +517,30 @@ app.get("/all-subs", async (req, res) => {
       return 0;
     });
 
-    // Формирование строк по 4 в ряд
-    const rows = [];
-    for (let i = 0; i < sorted.length; i += 4) {
-      const group = sorted.slice(i, i + 4);
-      const row = group
-        .map(({ sku, country }) => `${sku} - ${country}`.padEnd(20))
-        .join("");
-      rows.push(row.trimEnd());
-    }
+    // Формируем CSV: первая строка — заголовок
+    const csvLines = ["SKU,Country", ...sorted.map(({ sku, country }) => `${sku},${country}`)];
+    const csvContent = csvLines.join("\n");
 
-    const finalText = `Статистика:\n${rows.join("\n")}`;
+    // Путь к временно сохраняемому файлу
+    const filePath = path.join(__dirname, "subscription_stats.csv");
 
-    res.setHeader("Content-Type", "text/plain; charset=utf-8");
-    res.status(200).send(finalText);
+    // Запись в файл
+    fs.writeFileSync(filePath, csvContent, "utf-8");
+
+    // Отправка файла на скачивание
+    res.download(filePath, "subscription_stats.csv", (err) => {
+      if (err) {
+        console.error("Ошибка при отправке CSV:", err);
+        res.status(500).send("Ошибка при отправке CSV.");
+      }
+
+      // Удаляем файл после отправки
+      fs.unlink(filePath, (err) => {
+        if (err) console.error("Ошибка удаления временного файла:", err);
+      });
+    });
   } catch (error) {
-    console.error("Error checking subscriptions:", error);
+    console.error("Error generating CSV:", error);
     res.status(500).send("Ошибка при проверке подписок.");
   }
 })
