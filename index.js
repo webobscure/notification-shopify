@@ -502,19 +502,21 @@ app.get("/subscription-stats", async (req, res) => {
 });
 
 app.get("/all-subs", async (req, res) => {
-     try {
+   try {
     const [results] = await sequelize.query("SELECT sku, country FROM notifications");
 
     if (!results.length) {
+      res.setHeader("Content-Type", "text/plain; charset=utf-8");
       return res.status(200).send("Статистика:\nНет подписок.");
     }
 
     const textList = results
-      .map(({ sku, country }) => `${sku} - ${country}\n`)
+      .map(({ sku, country }) => `${sku} - ${country}`)
       .join("\n");
 
     const finalText = `Статистика:\n${textList}`;
 
+    res.setHeader("Content-Type", "text/plain; charset=utf-8");
     res.status(200).send(finalText);
   } catch (error) {
     console.error("Error checking subscriptions:", error);
