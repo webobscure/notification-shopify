@@ -502,7 +502,7 @@ app.get("/subscription-stats", async (req, res) => {
 });
 
 app.get("/all-subs", async (req, res) => {
-   try {
+  try {
     const [results] = await sequelize.query("SELECT sku, country FROM notifications");
 
     if (!results.length) {
@@ -510,11 +510,24 @@ app.get("/all-subs", async (req, res) => {
       return res.status(200).send("Статистика:\nНет подписок.");
     }
 
-    const textList = results
-      .map(({ sku, country }) => `${sku} - ${country}`)
-      .join("\n");
+    // Сортировка по стране
+    const sorted = results.sort((a, b) => {
+      if (a.country < b.country) return -1;
+      if (a.country > b.country) return 1;
+      return 0;
+    });
 
-    const finalText = `Статистика:\n${textList}`;
+    // Формирование строк по 4 в ряд
+    const rows = [];
+    for (let i = 0; i < sorted.length; i += 4) {
+      const group = sorted.slice(i, i + 4);
+      const row = group
+        .map(({ sku, country }) => `${sku} - ${country}`.padEnd(20))
+        .join("");
+      rows.push(row.trimEnd());
+    }
+
+    const finalText = `Статистика:\n${rows.join("\n")}`;
 
     res.setHeader("Content-Type", "text/plain; charset=utf-8");
     res.status(200).send(finalText);
