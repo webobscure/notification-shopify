@@ -502,18 +502,20 @@ app.get("/subscription-stats", async (req, res) => {
 });
 
 app.get("/all-subs", async (req, res) => {
-    try {
+     try {
     const [results] = await sequelize.query("SELECT sku, country FROM notifications");
 
     if (!results.length) {
-      return res.status(200).send("Нет подписок.");
+      return res.status(200).send("Статистика:\nНет подписок.");
     }
 
     const textList = results
-      .map(({ sku, country }) => `${sku} - ${country}`)
+      .map(({ sku, country }) => `${sku} - ${country}\n`)
       .join("\n");
 
-    res.status(200).send(textList);
+    const finalText = `Статистика:\n${textList}`;
+
+    res.status(200).send(finalText);
   } catch (error) {
     console.error("Error checking subscriptions:", error);
     res.status(500).send("Ошибка при проверке подписок.");
