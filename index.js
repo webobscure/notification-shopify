@@ -454,38 +454,49 @@ app.get("/check-subscription", async (req, res) => {
 
 app.get("/subscription-stats", async (req, res) => {
   try {
-    const skuStats = await Subscription.findAll({
+    const subscriptions = await Subscription.findAll({
       attributes: [
+        'country',
         'sku',
         [fn('COUNT', col('sku')), 'total_count']
       ],
-      group: ['sku'],
+      group: ['country', 'sku'],
       order: [[literal('total_count'), 'DESC']],
       raw: true,
     });
 
     const totalSubscriptions = await Subscription.count();
 
-    const columnCount = 4;
-    const rows = Math.ceil(skuStats.length / columnCount);
-    let formattedLines = [];
-
-    for (let row = 0; row < rows; row++) {
-      let line = '';
-      for (let col = 0; col < columnCount; col++) {
-        const index = row + col * rows;
-        if (index < skuStats.length) {
-          const item = skuStats[index];
-          const entry = `${item.sku}: ${item.total_count}`.padEnd(25);
-          line += entry;
-        }
-      }
-      formattedLines.push(line.trimEnd());
+    // Группируем по стране
+    const statsByCountry = {};
+    for (const item of subscriptions) {
+      const country = item.country || 'Unknown';
+      if (!statsByCountry[country]) statsByCountry[country] = [];
+      statsByCountry[country].push(item);
     }
 
-    const formattedText = 
-      `📦 Общее количество подписок: ${totalSubscriptions}\n\n` +
-      formattedLines.join('\n');
+    // Формируем текст
+    const columnCount = 4;
+    let lines = [`📦 Общее количество подписок: ${totalSubscriptions}\n`];
+
+    for (const [country, entries] of Object.entries(statsByCountry)) {
+      lines.push(`\n🌍 ${country}`);
+
+      const rows = Math.ceil(entries.length / columnCount);
+      for (let row = 0; row < rows; row++) {
+        let line = '';
+        for (let col = 0; col < columnCount; col++) {
+          const index = row + col * rows;
+          if (index < entries.length) {
+            const entry = `${entries[index].sku}: ${entries[index].total_count}`.padEnd(25);
+            line += entry;
+          }
+        }
+        lines.push(line.trimEnd());
+      }
+    }
+
+    const formattedText = lines.join('\n');
 
     res.setHeader('Content-Type', 'text/plain');
     res.status(200).send(formattedText);
