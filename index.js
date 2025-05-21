@@ -451,56 +451,33 @@ app.get("/check-subscription", async (req, res) => {
     res.status(500).json({ message: "Error checking subscriptions" });
   }
 });
+
 app.get("/subscription-stats", async (req, res) => {
   try {
-    const today = new Date();
-    const startOfWeek = new Date(today);
-    startOfWeek.setDate(today.getDate() - today.getDay() - 7);
-    startOfWeek.setHours(0, 0, 0, 0);
-
-    const endOfWeek = new Date(today);
-    endOfWeek.setDate(today.getDate() - today.getDay() - 1);
-    endOfWeek.setHours(23, 59, 59, 999);
-
-    // Получаем статистику по SKU за последнюю неделю и общее количество подписок
-    const weeklyStats = await Subscription.findAll({
+    // Получаем общее количество подписок на каждый SKU за всё время
+    const skuStats = await Subscription.findAll({
       attributes: [
         'sku',
-        [fn('COUNT', col('sku')), 'total_count'],
-        [
-          fn('COUNT', literal(`CASE WHEN "createdAt" BETWEEN '${startOfWeek.toISOString()}' AND '${endOfWeek.toISOString()}' THEN 1 END`)),
-          'weekly_count'
-        ],
+        [fn('COUNT', col('sku')), 'total_count']
       ],
       group: ['sku'],
     });
 
+    // Общее количество подписок по всем SKU
     const totalSubscriptions = await Subscription.count();
-    const subscriptionsLastWeek = await Subscription.count({
-      where: {
-        createdAt: {
-          [Op.between]: [startOfWeek, endOfWeek],
-        },
-      },
-    });
 
-    // Формируем ответ
     const statsData = {
-      totalStats: {
-        total_subscriptions: totalSubscriptions,
-        subscriptions_last_week: subscriptionsLastWeek,
-      },
-      weeklyStats,
+      total_subscriptions: totalSubscriptions,
+      skuStats, // массив с полями { sku, total_count }
     };
 
     res.status(200).json(statsData);
-
-
   } catch (error) {
     console.error("Error getting subscription statistics:", error);
     res.status(500).json({ message: "Error getting subscription statistics" });
   }
 });
+
 
 app.get("/all-subs", async (req, res) => {
 try {
