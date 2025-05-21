@@ -8,7 +8,6 @@ const PORT = process.env.PORT || 3000;
 const { Op, fn, col, literal } = require('sequelize');
 const fs = require("fs");
 const path = require("path");
-const ExcelJS = require("exceljs");
 sequelize
   .sync({ alter: true })
   .then(() => {
@@ -504,7 +503,7 @@ app.get("/subscription-stats", async (req, res) => {
 });
 
 app.get("/all-subs", async (req, res) => {
-  try {
+try {
     const [results] = await sequelize.query("SELECT sku, country FROM notifications");
 
     if (!results.length) {
@@ -512,39 +511,61 @@ app.get("/all-subs", async (req, res) => {
     }
 
     // Сортировка по стране
-    const sorted = results.sort((a, b) => {
-      if (a.country < b.country) return -1;
-      if (a.country > b.country) return 1;
-      return 0;
-    });
+    const sorted = results.sort((a, b) => a.country.localeCompare(b.country));
 
-    // Формируем CSV: первая строка — заголовок
-    const csvLines = ["SKU,Country", ...sorted.map(({ sku, country }) => `${sku},${country}`)];
+    // Формируем CSV с разделителем ";", чтобы корректно открылся в Excel
+    const csvLines = ["SKU;Country", ...sorted.map(({ sku, country }) => `${sku};${country}`)];
     const csvContent = csvLines.join("\n");
-
-    // Путь к временно сохраняемому файлу
     const filePath = path.join(__dirname, "subscription_stats.csv");
-
-    // Запись в файл
     fs.writeFileSync(filePath, csvContent, "utf-8");
 
-    // Отправка файла на скачивание
-    res.download(filePath, "subscription_stats.csv", (err) => {
-      if (err) {
-        console.error("Ошибка при отправке CSV:", err);
-        res.status(500).send("Ошибка при отправке CSV.");
-      }
+    // Генерация текстовой статистики (4 в ряд)
+    const statLines = sorted.map(({ sku, country }) => `${sku} - ${country}`);
+    const formattedText = statLines.reduce((acc, curr, idx) => {
+      const prefix = idx % 4 === 0 ? "\n" : "";
+      return acc + prefix + curr + "    ";
+    }, "Статистика:\n");
 
-      // Удаляем файл после отправки
-      fs.unlink(filePath, (err) => {
-        if (err) console.error("Ошибка удаления временного файла:", err);
-      });
-    });
+    // Вывод HTML с текстом и кнопкой для скачивания CSV
+    const downloadUrl = "/download-subscription-csv";
+    const html = `
+      <html>
+        <head>
+          <meta charset="UTF-8">
+          <title>Подписки</title>
+        </head>
+        <body>
+          <pre>${formattedText}</pre>
+          <a href="${downloadUrl}" download="subscription_stats.csv">
+            <button>Скачать CSV</button>
+          </a>
+        </body>
+      </html>
+    `;
+
+    // Отдаём HTML-страницу, но сам файл через другой роут
+    res.send(html);
   } catch (error) {
     console.error("Error generating CSV:", error);
     res.status(500).send("Ошибка при проверке подписок.");
   }
 })
+
+// Отдельный эндпоинт для скачивания CSV
+app.get("/download-subscription-csv", (req, res) => {
+  const filePath = path.join(__dirname, "subscription_stats.csv");
+  res.download(filePath, "subscription_stats.csv", (err) => {
+    if (err) {
+      console.error("Ошибка при скачивании CSV:", err);
+      res.status(500).send("Ошибка при скачивании файла.");
+    }
+
+    // Удаляем после отправки
+    fs.unlink(filePath, (err) => {
+      if (err) console.error("Ошибка удаления временного файла:", err);
+    });
+  });
+});
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
