@@ -503,33 +503,45 @@ app.get("/subscription-stats", async (req, res) => {
 });
 
 app.get("/all-subs", async (req, res) => {
-  try {
+try {
     const [results] = await sequelize.query("SELECT sku, country FROM notifications");
 
     if (!results.length) {
       return res.status(200).send("Нет подписок.");
     }
 
-    // Сортировка по стране
-    const sorted = results.sort((a, b) => a.country.localeCompare(b.country));
+    // Группировка по странам
+    const countryMap = {};
+    for (const { sku, country } of results) {
+      if (!countryMap[country]) countryMap[country] = [];
+      countryMap[country].push(sku);
+    }
 
-    // CSV с ; для Excel
-    const csvLines = ["SKU;Country", ...sorted.map(({ sku, country }) => `${sku};${country}`)];
+    // Формирование CSV
+    const csvLines = ["SKU;Country", ...results.map(({ sku, country }) => `${sku};${country}`)];
     const csvContent = csvLines.join("\n");
     const filePath = path.join(__dirname, "subscription_stats.csv");
     fs.writeFileSync(filePath, csvContent, "utf-8");
 
-    // Текстовая статистика для таблицы (4 в ряд)
-    const statLines = sorted.map(({ sku, country }) => `${sku} - ${country}`);
-    const rows = [];
-    for (let i = 0; i < statLines.length; i += 4) {
-      const cols = statLines.slice(i, i + 4).map(entry => `<td>${entry}</td>`).join("");
-      rows.push(`<tr>${cols}</tr>`);
-    }
+    // Генерация HTML с таблицами по странам
+    const countryTables = Object.entries(countryMap).map(([country, skus]) => {
+      const rows = [];
+      for (let i = 0; i < skus.length; i += 4) {
+        const row = skus.slice(i, i + 4).map(sku => `<td>${sku} - ${country}</td>`).join("");
+        rows.push(`<tr>${row}</tr>`);
+      }
+
+      return `
+        <h3>${country}</h3>
+        <table>
+          ${rows.join("\n")}
+        </table>
+      `;
+    });
 
     const downloadUrl = "/download-subscription-csv";
 
-    // HTML-страница с таблицей и кнопкой
+    // HTML-шаблон
     const html = `
       <html>
         <head>
@@ -539,6 +551,10 @@ app.get("/all-subs", async (req, res) => {
             body {
               font-family: Arial, sans-serif;
               padding: 20px;
+            }
+            h3 {
+              margin-top: 30px;
+              color: #333;
             }
             table {
               width: 100%;
@@ -565,10 +581,8 @@ app.get("/all-subs", async (req, res) => {
           </style>
         </head>
         <body>
-          <h2>Статистика:</h2>
-          <table>
-            ${rows.join("\n")}
-          </table>
+          <h2>Статистика подписок по странам:</h2>
+          ${countryTables.join("\n")}
           <a href="${downloadUrl}" download="subscription_stats.csv">
             <button>Скачать CSV</button>
           </a>
@@ -578,7 +592,7 @@ app.get("/all-subs", async (req, res) => {
 
     res.send(html);
   } catch (error) {
-    console.error("Error generating CSV:", error);
+    console.error("Error generating subscription data:", error);
     res.status(500).send("Ошибка при проверке подписок.");
   }
 });
