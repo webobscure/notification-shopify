@@ -468,7 +468,7 @@ app.get("/subscription-stats", async (req, res) => {
 
     const statsData = {
       total_subscriptions: totalSubscriptions,
-      skuStats, // массив с полями { sku, total_count }
+      skuStats, 
     };
 
     res.status(200).json(statsData);
