@@ -454,29 +454,28 @@ app.get("/check-subscription", async (req, res) => {
 
 app.get("/subscription-stats", async (req, res) => {
   try {
-    // Получаем общее количество подписок на каждый SKU за всё время
     const skuStats = await Subscription.findAll({
       attributes: [
         'sku',
         [fn('COUNT', col('sku')), 'total_count']
       ],
       group: ['sku'],
+      order: [[literal('total_count'), 'DESC']], // сортировка по убыванию
+      raw: true,
     });
 
-    // Общее количество подписок по всем SKU
     const totalSubscriptions = await Subscription.count();
 
-    const statsData = {
+    res.status(200).json({
       total_subscriptions: totalSubscriptions,
-      skuStats, 
-    };
-
-    res.status(200).json(statsData);
+      skuStats
+    });
   } catch (error) {
     console.error("Error getting subscription statistics:", error);
     res.status(500).json({ message: "Error getting subscription statistics" });
   }
 });
+
 
 
 app.get("/all-subs", async (req, res) => {
