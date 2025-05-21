@@ -503,7 +503,7 @@ app.get("/subscription-stats", async (req, res) => {
 });
 
 app.get("/all-subs", async (req, res) => {
-try {
+  try {
     const [results] = await sequelize.query("SELECT sku, country FROM notifications");
 
     if (!results.length) {
@@ -513,29 +513,62 @@ try {
     // Сортировка по стране
     const sorted = results.sort((a, b) => a.country.localeCompare(b.country));
 
-    // Формируем CSV с разделителем ";", чтобы корректно открылся в Excel
+    // CSV с ; для Excel
     const csvLines = ["SKU;Country", ...sorted.map(({ sku, country }) => `${sku};${country}`)];
     const csvContent = csvLines.join("\n");
     const filePath = path.join(__dirname, "subscription_stats.csv");
     fs.writeFileSync(filePath, csvContent, "utf-8");
 
-    // Генерация текстовой статистики (4 в ряд)
+    // Текстовая статистика для таблицы (4 в ряд)
     const statLines = sorted.map(({ sku, country }) => `${sku} - ${country}`);
-    const formattedText = statLines.reduce((acc, curr, idx) => {
-      const prefix = idx % 4 === 0 ? "\n" : "";
-      return acc + prefix + curr + "    ";
-    }, "Статистика:\n");
+    const rows = [];
+    for (let i = 0; i < statLines.length; i += 4) {
+      const cols = statLines.slice(i, i + 4).map(entry => `<td>${entry}</td>`).join("");
+      rows.push(`<tr>${cols}</tr>`);
+    }
 
-    // Вывод HTML с текстом и кнопкой для скачивания CSV
     const downloadUrl = "/download-subscription-csv";
+
+    // HTML-страница с таблицей и кнопкой
     const html = `
       <html>
         <head>
           <meta charset="UTF-8">
           <title>Подписки</title>
+          <style>
+            body {
+              font-family: Arial, sans-serif;
+              padding: 20px;
+            }
+            table {
+              width: 100%;
+              border-collapse: collapse;
+              margin-bottom: 20px;
+            }
+            td {
+              border: 1px solid #ccc;
+              padding: 6px 10px;
+              vertical-align: top;
+            }
+            button {
+              font-size: 16px;
+              padding: 10px 16px;
+              background-color: #4CAF50;
+              color: white;
+              border: none;
+              border-radius: 4px;
+              cursor: pointer;
+            }
+            button:hover {
+              background-color: #45a049;
+            }
+          </style>
         </head>
         <body>
-          <pre>${formattedText}</pre>
+          <h2>Статистика:</h2>
+          <table>
+            ${rows.join("\n")}
+          </table>
           <a href="${downloadUrl}" download="subscription_stats.csv">
             <button>Скачать CSV</button>
           </a>
@@ -543,13 +576,12 @@ try {
       </html>
     `;
 
-    // Отдаём HTML-страницу, но сам файл через другой роут
     res.send(html);
   } catch (error) {
     console.error("Error generating CSV:", error);
     res.status(500).send("Ошибка при проверке подписок.");
   }
-})
+});
 
 // Отдельный эндпоинт для скачивания CSV
 app.get("/download-subscription-csv", (req, res) => {
