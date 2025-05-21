@@ -460,21 +460,42 @@ app.get("/subscription-stats", async (req, res) => {
         [fn('COUNT', col('sku')), 'total_count']
       ],
       group: ['sku'],
-      order: [[literal('total_count'), 'DESC']], // сортировка по убыванию
+      order: [[literal('total_count'), 'DESC']],
       raw: true,
     });
 
     const totalSubscriptions = await Subscription.count();
 
-    res.status(200).json({
-      total_subscriptions: totalSubscriptions,
-      skuStats
-    });
+    const columnCount = 4;
+    const rows = Math.ceil(skuStats.length / columnCount);
+    let formattedLines = [];
+
+    for (let row = 0; row < rows; row++) {
+      let line = '';
+      for (let col = 0; col < columnCount; col++) {
+        const index = row + col * rows;
+        if (index < skuStats.length) {
+          const item = skuStats[index];
+          const entry = `${item.sku}: ${item.total_count}`.padEnd(25);
+          line += entry;
+        }
+      }
+      formattedLines.push(line.trimEnd());
+    }
+
+    const formattedText = 
+      `📦 Общее количество подписок: ${totalSubscriptions}\n\n` +
+      formattedLines.join('\n');
+
+    res.setHeader('Content-Type', 'text/plain');
+    res.status(200).send(formattedText);
+
   } catch (error) {
     console.error("Error getting subscription statistics:", error);
-    res.status(500).json({ message: "Error getting subscription statistics" });
+    res.status(500).send("Ошибка при получении статистики подписок");
   }
 });
+
 
 
 
