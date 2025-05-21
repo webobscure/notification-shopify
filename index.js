@@ -504,65 +504,45 @@ app.get("/subscription-stats", async (req, res) => {
 });
 
 app.get("/all-subs", async (req, res) => {
- try {
-    const { country, from, to } = req.query;
-
-    let query = "SELECT sku, country, createdAt FROM notifications WHERE 1=1";
-    const replacements = [];
-
-    if (country) {
-      query += " AND country = ?";
-      replacements.push(country);
-    }
-
-    if (from) {
-      query += " AND createdAt >= ?";
-      replacements.push(new Date(from));
-    }
-
-    if (to) {
-      query += " AND createdAt <= ?";
-      replacements.push(new Date(to));
-    }
-
-    const [results] = await sequelize.query(query, { replacements });
+  try {
+    const [results] = await sequelize.query("SELECT sku, country FROM notifications");
 
     if (!results.length) {
-      return res.status(200).send("Нет подписок по заданным параметрам.");
+      return res.status(200).send("Нет подписок.");
     }
 
     // Сортировка по стране
-    results.sort((a, b) => a.country.localeCompare(b.country));
+    const sorted = results.sort((a, b) => {
+      if (a.country < b.country) return -1;
+      if (a.country > b.country) return 1;
+      return 0;
+    });
 
-    // Создание Excel-файла
-    const workbook = new ExcelJS.Workbook();
-    const worksheet = workbook.addWorksheet("Подписки");
+    // Формируем CSV: первая строка — заголовок
+    const csvLines = ["SKU,Country", ...sorted.map(({ sku, country }) => `${sku},${country}`)];
+    const csvContent = csvLines.join("\n");
 
-    worksheet.columns = [
-      { header: "SKU", key: "sku", width: 20 },
-      { header: "Страна", key: "country", width: 15 },
-      { header: "Дата создания", key: "createdAt", width: 25 },
-    ];
+    // Путь к временно сохраняемому файлу
+    const filePath = path.join(__dirname, "subscription_stats.csv");
 
-    results.forEach(row => worksheet.addRow(row));
-
-    const filePath = path.join(__dirname, "subscription_stats.xlsx");
-    await workbook.xlsx.writeFile(filePath);
+    // Запись в файл
+    fs.writeFileSync(filePath, csvContent, "utf-8");
 
     // Отправка файла на скачивание
-    res.download(filePath, "subscription_stats.xlsx", (err) => {
+    res.download(filePath, "subscription_stats.csv", (err) => {
       if (err) {
-        console.error("Ошибка отправки Excel:", err);
-        res.status(500).send("Ошибка отправки файла.");
+        console.error("Ошибка при отправке CSV:", err);
+        res.status(500).send("Ошибка при отправке CSV.");
       }
 
+      // Удаляем файл после отправки
       fs.unlink(filePath, (err) => {
         if (err) console.error("Ошибка удаления временного файла:", err);
       });
     });
   } catch (error) {
-    console.error("Ошибка при формировании Excel:", error);
-    res.status(500).send("Ошибка при экспорте подписок.");
+    console.error("Error generating CSV:", error);
+    res.status(500).send("Ошибка при проверке подписок.");
   }
 })
 
