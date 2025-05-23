@@ -86,7 +86,7 @@ app.post("/send-notification", async (req, res) => {
     
         <!-- Копирайт -->
          
-            <p style="margin-top: 20px;text-align:right;">© 2024 Onkron ${country}</p>
+            <p style="margin-top: 20px;text-align:right;">© 2025 Onkron ${country}</p>
     </div>`,
         };
       case "UK":
@@ -136,7 +136,7 @@ app.post("/send-notification", async (req, res) => {
     
         <!-- Копирайт -->
          
-            <p style="margin-top: 20px;text-align:right;">© 2024 Onkron ${country}</p>
+            <p style="margin-top: 20px;text-align:right;">© 2025 Onkron ${country}</p>
     </div>`,
         };
       // Добавляем остальные страны по аналогии
@@ -187,7 +187,7 @@ app.post("/send-notification", async (req, res) => {
     
         <!-- Копирайт -->
          
-            <p style="margin-top: 20px;text-align:right;">© 2024 Onkron ${country}</p>
+            <p style="margin-top: 20px;text-align:right;">© 2025 Onkron ${country}</p>
     </div>`,
         };
       case "PL":
@@ -237,7 +237,7 @@ app.post("/send-notification", async (req, res) => {
     
         <!-- Копирайт -->
          
-            <p style="margin-top: 20px;text-align:right;">© 2024 Onkron ${country}</p>
+            <p style="margin-top: 20px;text-align:right;">© 2025 Onkron ${country}</p>
     </div>`,
         };
       case "FR":
@@ -287,7 +287,7 @@ app.post("/send-notification", async (req, res) => {
     
         <!-- Копирайт -->
          
-            <p style="margin-top: 20px;text-align:right;">© 2024 Onkron ${country}</p>
+            <p style="margin-top: 20px;text-align:right;">© 2025 Onkron ${country}</p>
     </div>`,
         };
       case "IT":
@@ -337,7 +337,7 @@ app.post("/send-notification", async (req, res) => {
     
         <!-- Копирайт -->
          
-            <p style="margin-top: 20px;text-align:right;">© 2024 Onkron ${country}</p>
+            <p style="margin-top: 20px;text-align:right;">© 2025 Onkron ${country}</p>
     </div>`,
         };
       case "ES":
@@ -387,7 +387,7 @@ app.post("/send-notification", async (req, res) => {
     
         <!-- Копирайт -->
          
-            <p style="margin-top: 20px;text-align:right;">© 2024 Onkron ${country}</p>
+            <p style="margin-top: 20px;text-align:right;">© 2025 Onkron ${country}</p>
     </div>`,
         };
       default:

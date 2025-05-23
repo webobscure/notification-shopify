@@ -70,7 +70,7 @@ async function checkProductAvailability() {
 
       try {
         const response = await fetchWithRetry(
-          `https://${shopifyStore}/admin/api/2024-10/products/${subscription.inventory_id}.json`,
+          `https://${shopifyStore}/admin/api/2025-10/products/${subscription.inventory_id}.json`,
           { 'X-Shopify-Access-Token': shopifyAccessToken }
         );
 
@@ -131,7 +131,7 @@ function getShopifyConfig(country, subscription) {
       <!-- Горизонтальная линия -->
       <hr style="background-color: #1fcfca; height: 1px; border: none; width: 100%; max-width: 600px; margin: 20px auto;">
       <!-- Копирайт -->
-      <p style="margin-top: 20px;text-align:right;">© 2024 Onkron ${subscription.country}</p>
+      <p style="margin-top: 20px;text-align:right;">© 2025 Onkron ${subscription.country}</p>
     </div>`
       };
     case 'UK':
@@ -161,7 +161,7 @@ function getShopifyConfig(country, subscription) {
       <!-- Горизонтальная линия -->
       <hr style="background-color: #1fcfca; height: 1px; border: none; width: 100%; max-width: 600px; margin: 20px auto;">
       <!-- Копирайт -->
-      <p style="margin-top: 20px;text-align:right;">© 2024 Onkron ${subscription.country}</p>
+      <p style="margin-top: 20px;text-align:right;">© 2025 Onkron ${subscription.country}</p>
     </div>`
       };
     // Добавляем остальные страны по аналогии
@@ -192,7 +192,7 @@ function getShopifyConfig(country, subscription) {
       <!-- Горизонтальная линия -->
       <hr style="background-color: #1fcfca; height: 1px; border: none; width: 100%; max-width: 600px; margin: 20px auto;">
       <!-- Копирайт -->
-      <p style="margin-top: 20px;text-align:right;">© 2024 Onkron ${subscription.country}</p>
+      <p style="margin-top: 20px;text-align:right;">© 2025 Onkron ${subscription.country}</p>
     </div>`
       };
     case 'PL':
@@ -222,7 +222,7 @@ function getShopifyConfig(country, subscription) {
       <!-- Горизонтальная линия -->
       <hr style="background-color: #1fcfca; height: 1px; border: none; width: 100%; max-width: 600px; margin: 20px auto;">
       <!-- Копирайт -->
-      <p style="margin-top: 20px;text-align:right;">© 2024 Onkron ${subscription.country}</p>
+      <p style="margin-top: 20px;text-align:right;">© 2025 Onkron ${subscription.country}</p>
     </div>`
       };
     case 'FR':
@@ -252,7 +252,7 @@ function getShopifyConfig(country, subscription) {
       <!-- Горизонтальная линия -->
       <hr style="background-color: #1fcfca; height: 1px; border: none; width: 100%; max-width: 600px; margin: 20px auto;">
       <!-- Копирайт -->
-      <p style="margin-top: 20px;text-align:right;">© 2024 Onkron ${subscription.country}</p>
+      <p style="margin-top: 20px;text-align:right;">© 2025 Onkron ${subscription.country}</p>
     </div>`
       };
     case 'IT':
@@ -282,7 +282,7 @@ function getShopifyConfig(country, subscription) {
       <!-- Горизонтальная линия -->
       <hr style="background-color: #1fcfca; height: 1px; border: none; width: 100%; max-width: 600px; margin: 20px auto;">
       <!-- Копирайт -->
-      <p style="margin-top: 20px;text-align:right;">© 2024 Onkron ${subscription.country}</p>
+      <p style="margin-top: 20px;text-align:right;">© 2025 Onkron ${subscription.country}</p>
     </div>`
       };
     case 'ES':
@@ -312,7 +312,7 @@ function getShopifyConfig(country, subscription) {
       <!-- Горизонтальная линия -->
       <hr style="background-color: #1fcfca; height: 1px; border: none; width: 100%; max-width: 600px; margin: 20px auto;">
       <!-- Копирайт -->
-      <p style="margin-top: 20px;text-align:right;">© 2024 Onkron ${subscription.country}</p>
+      <p style="margin-top: 20px;text-align:right;">© 2025 Onkron ${subscription.country}</p>
     </div>`
       };
     default:
