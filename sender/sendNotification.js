@@ -87,7 +87,7 @@ async function checkProductAvailability() {
           console.log(`Product with ID ${subscription.inventory_id} not found.`);
         }
       } catch (error) {
-        console.error(`Error fetching product for subscription ${subscription.inventory_id}:`, error.message);
+        console.error(`Error fetching product from ${subscription.country} for subscription ${subscription.inventory_id}:`, error.message);
         await sendNotification('sparkygino@gmail.com', {
           subject: "Error fetching product",
           text: "Error fetching product",
