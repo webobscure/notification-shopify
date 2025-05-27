@@ -120,7 +120,7 @@ function getShopifyConfig(country, subscription) {
       <!-- Заголовок -->
       <p style="color: #1fcfca; margin-top: 30px;font-weight: 500;">Thank you for your continued support. We look forward to serving you through our new subscription service.</p>
       <!-- Заключение -->
-      <p style="margin-top: 20px;text-align: left;">Best regards, <br>Alex<br>Onkron Technologies</p>
+      <p style="margin-top: 20px;text-align: left;">Best regards<br>Onkron Technologies</p>
       <!-- Горизонтальная линия -->
       <hr style="background-color: #1fcfca; height: 15px; border: none; width: 100%; max-width: 600px; margin: 30px auto;">
       <!-- Адрес -->
@@ -150,7 +150,7 @@ function getShopifyConfig(country, subscription) {
       <!-- Заголовок -->
       <p style="color: #1fcfca; margin-top: 30px;font-weight: 500;">Thank you for your continued support. We look forward to serving you through our new subscription service.</p>
       <!-- Заключение -->
-      <p style="margin-top: 20px;text-align: left;">Best regards, <br>Alex<br>Onkron Technologies</p>
+      <p style="margin-top: 20px;text-align: left;">Best regards<br>Onkron Technologies</p>
       <!-- Горизонтальная линия -->
       <hr style="background-color: #1fcfca; height: 15px; border: none; width: 100%; max-width: 600px; margin: 30px auto;">
       <!-- Адрес -->
@@ -181,7 +181,7 @@ function getShopifyConfig(country, subscription) {
       <!-- Заголовок -->
       <p style="color: #1fcfca; margin-top: 30px;font-weight: 500;"> Wir danken Ihnen herzlich für Ihre anhaltende Unterstützung und freuen uns darauf, Sie mit unserem neuen Abonnementservice betreuen zu dürfen.</p>
       <!-- Заключение -->
-      <p style="margin-top: 20px;text-align: left;">Mit besten Grüßen, <br>Alex<br>Onkron Technologies</p>
+      <p style="margin-top: 20px;text-align: left;">Mit besten Grüßen<br>Onkron Technologies</p>
       <!-- Горизонтальная линия -->
       <hr style="background-color: #1fcfca; height: 15px; border: none; width: 100%; max-width: 600px; margin: 30px auto;">
       <!-- Адрес -->
@@ -211,7 +211,7 @@ function getShopifyConfig(country, subscription) {
       <!-- Заголовок -->
       <p style="color: #1fcfca; margin-top: 30px;font-weight: 500;"> Serdecznie dziękujemy za Twoje stałe wsparcie i z niecierpliwością czekamy na możliwość obsługi w ramach naszej nowej usługi subskrypcyjnej.</p>
       <!-- Заключение -->
-      <p style="margin-top: 20px;text-align: left;">Z wyrazami szacunku, <br>Alex<br>Onkron Technologies</p>
+      <p style="margin-top: 20px;text-align: left;">Z wyrazami szacunku<br>Onkron Technologies</p>
       <!-- Горизонтальная линия -->
       <hr style="background-color: #1fcfca; height: 15px; border: none; width: 100%; max-width: 600px; margin: 30px auto;">
       <!-- Адрес -->
@@ -241,7 +241,7 @@ function getShopifyConfig(country, subscription) {
       <!-- Заголовок -->
       <p style="color: #1fcfca; margin-top: 30px;font-weight: 500;"> Nous vous remercions sincèrement pour votre fidélité et sommes hâte de vous servir grâce à notre nouveau service d’abonnement.</p>
       <!-- Заключение -->
-      <p style="margin-top: 20px;text-align: left;">Cordialement, <br>Alex<br>Onkron Technologies</p>
+      <p style="margin-top: 20px;text-align: left;">Cordialement<br>Onkron Technologies</p>
       <!-- Горизонтальная линия -->
       <hr style="background-color: #1fcfca; height: 15px; border: none; width: 100%; max-width: 600px; margin: 30px auto;">
       <!-- Адрес -->
@@ -271,7 +271,7 @@ function getShopifyConfig(country, subscription) {
       <!-- Заголовок -->
       <p style="color: #1fcfca; margin-top: 30px;font-weight: 500;">Vi ringraziamo per il costante sostegno e siamo entusiasti di potervi assistere con il nostro nuovo servizio in abbonamento.</p>
       <!-- Заключение -->
-      <p style="margin-top: 20px;text-align: left;">Distinti saluti, <br>Alex<br>Onkron Technologies</p>
+      <p style="margin-top: 20px;text-align: left;">Distinti saluti<br>Onkron Technologies</p>
       <!-- Горизонтальная линия -->
       <hr style="background-color: #1fcfca; height: 15px; border: none; width: 100%; max-width: 600px; margin: 30px auto;">
       <!-- Адрес -->
@@ -301,7 +301,7 @@ function getShopifyConfig(country, subscription) {
       <!-- Заголовок -->
       <p style="color: #1fcfca; margin-top: 30px;font-weight: 500;"> . Agradecemos sinceramente su constante apoyo y esperamos atenderle mediante nuestro nuevo servicio de suscripción.</p>
       <!-- Заключение -->
-      <p style="margin-top: 20px;text-align: left;">Cordialmente, <br>Alex<br>Onkron Technologies</p>
+      <p style="margin-top: 20px;text-align: left;">Cordialmente<br>Onkron Technologies</p>
       <!-- Горизонтальная линия -->
       <hr style="background-color: #1fcfca; height: 15px; border: none; width: 100%; max-width: 600px; margin: 30px auto;">
       <!-- Адрес -->
