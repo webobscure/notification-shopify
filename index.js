@@ -18,11 +18,16 @@ sequelize
   });
 
 const transporter = nodemailer.createTransport({
-  service: "gmail",
+  host: "smtp.gmail.com",
+  port: 587,
+  secure: false,
   auth: {
     user: process.env.USER_AGENT,
     pass: process.env.USER_PASSWORD,
   },
+  requireTLS: true,
+  logger: true,
+  debug: true
 });
 
 // middleware for json
