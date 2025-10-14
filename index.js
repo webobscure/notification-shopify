@@ -12,7 +12,7 @@ const path = require("path");
 const postmark = require("postmark");
 const client = new postmark.ServerClient(process.env.POSTMARK_API_TOKEN);
 
-export async function sendEmail({ to, subject, html, text }) {
+ async function sendEmail({ to, subject, html, text }) {
   try {
     const response = await client.sendEmail({
       From: process.env.FROM_EMAIL,
@@ -675,3 +675,6 @@ app.get("/download-subscription-csv", (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+
+
+module.exports = { sendEmail };
