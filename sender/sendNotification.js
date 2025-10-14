@@ -12,11 +12,13 @@ const PORT = process.env.PORT_CHECKER || 5000;
 
 // Настройка транспорта для отправки писем
 const transporter = nodemailer.createTransport({
-  service: "gmail",
+  host: process.env.SENDER, 
+  port: 587,                     
+  secure: false,                 // false для TLS на 587 порте (STARTTLS), true для 465
   auth: {
-    user: process.env.USER_AGENT,
-    pass: process.env.USER_PASSWORD
-  }
+    user: process.env.SENDER_USER,             
+    pass: process.env.SENDER_PASSWORD, 
+  },
 });
 
 // Middleware для обработки JSON
