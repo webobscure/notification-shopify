@@ -8,6 +8,7 @@ const PORT = process.env.PORT || 3000;
 const { Op, fn, col, literal } = require("sequelize");
 const fs = require("fs");
 const path = require("path");
+const axios = require('axios');
 
 const postmark = require("postmark");
 const client = new postmark.ServerClient(process.env.POSTMARK_API_TOKEN);
