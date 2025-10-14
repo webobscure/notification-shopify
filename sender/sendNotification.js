@@ -1,33 +1,34 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const axios = require('axios');
-const nodemailer = require('nodemailer');
-const cron = require('node-cron');
-const sequelize = require('../config/database');
-const Subscription = require('../models/Subscription');
+const express = require("express");
+const bodyParser = require("body-parser");
+const axios = require("axios");
+const nodemailer = require("nodemailer");
+const cron = require("node-cron");
+const sequelize = require("../config/database");
+const Subscription = require("../models/Subscription");
 
 const app = express();
 const PORT = process.env.PORT_CHECKER || 5000;
 
-
 // Настройка транспорта для отправки писем
 const transporter = nodemailer.createTransport({
-  service: "gmail",
+  host: "smtp.gmail.com",
+  port: 587,
+  secure: false,
   auth: {
     user: process.env.USER_AGENT,
-    pass: process.env.USER_PASSWORD
-  }
+    pass: process.env.USER_PASSWORD,
+  },
+  requireTLS: true,
+  logger: true,
+  debug: true
 });
 
 // Middleware для обработки JSON
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-
-
-
 async function delay(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 async function fetchWithRetry(url, headers, retries = 3, delayMs = 5000) {
@@ -37,7 +38,7 @@ async function fetchWithRetry(url, headers, retries = 3, delayMs = 5000) {
       return response;
     } catch (error) {
       if (error.response?.status === 429) {
-        const retryAfter = error.response.headers['retry-after']; // Shopify может прислать время ожидания
+        const retryAfter = error.response.headers["retry-after"]; // Shopify может прислать время ожидания
         const waitTime = retryAfter ? parseInt(retryAfter) * 1000 : delayMs;
         console.warn(`Rate limit exceeded. Retrying in ${waitTime}ms...`);
 
@@ -58,53 +59,71 @@ async function checkProductAvailability() {
     const subscriptions = await Subscription.findAll();
 
     for (const subscription of subscriptions) {
-      console.log(`Checking product availability for subscription: ${JSON.stringify(subscription)}`);
+      console.log(
+        `Checking product availability for subscription: ${JSON.stringify(
+          subscription
+        )}`
+      );
 
-      const shopifyConfig = getShopifyConfig(subscription.country, subscription);
+      const shopifyConfig = getShopifyConfig(
+        subscription.country,
+        subscription
+      );
       if (!shopifyConfig) {
-        console.log(`No Shopify credentials configured for country: ${subscription.country}`);
+        console.log(
+          `No Shopify credentials configured for country: ${subscription.country}`
+        );
         continue;
       }
 
-      const { shopifyStore, shopifyAccessToken, subject, text, html } = shopifyConfig;
+      const { shopifyStore, shopifyAccessToken, subject, text, html } =
+        shopifyConfig;
 
       try {
         const response = await fetchWithRetry(
           `https://${shopifyStore}/admin/api/2025-10/products/${subscription.inventory_id}.json`,
-          { 'X-Shopify-Access-Token': shopifyAccessToken }
+          { "X-Shopify-Access-Token": shopifyAccessToken }
         );
 
         const product = response.data.product;
         if (product) {
-          const availableVariants = product.variants.filter(variant => variant.inventory_quantity > 0);
-          console.log(`Available variants: ${JSON.stringify(availableVariants)}`);
+          const availableVariants = product.variants.filter(
+            (variant) => variant.inventory_quantity > 0
+          );
+          console.log(
+            `Available variants: ${JSON.stringify(availableVariants)}`
+          );
 
           if (availableVariants.length > 0) {
             await sendNotification(subscription.email, { subject, text, html });
             await subscription.destroy();
           }
         } else {
-          console.log(`Product with ID ${subscription.inventory_id} not found.`);
+          console.log(
+            `Product with ID ${subscription.inventory_id} not found.`
+          );
         }
       } catch (error) {
-        console.error(`Error fetching product from ${subscription.country} for subscription ${subscription.inventory_id}:`, error.message);
-        await sendNotification('sparkygino@gmail.com', {
+        console.error(
+          `Error fetching product from ${subscription.country} for subscription ${subscription.inventory_id}:`,
+          error.message
+        );
+        await sendNotification("sparkygino@gmail.com", {
           subject: "Error fetching product",
           text: "Error fetching product",
-          html: error.message
+          html: error.message,
         });
       }
     }
   } catch (error) {
-    console.error('Error fetching subscriptions:', error.message);
+    console.error("Error fetching subscriptions:", error.message);
   }
 }
-
 
 // Функция для получения конфигурации Shopify в зависимости от страны
 function getShopifyConfig(country, subscription) {
   switch (country) {
-    case 'US':
+    case "US":
       return {
         shopifyStore: process.env.SHOPIFY_US_STORE,
         shopifyAccessToken: process.env.SHOPIFY_US_ACCESS_TOKEN,
@@ -132,9 +151,9 @@ function getShopifyConfig(country, subscription) {
       <hr style="background-color: #1fcfca; height: 1px; border: none; width: 100%; max-width: 600px; margin: 20px auto;">
       <!-- Копирайт -->
       <p style="margin-top: 20px;text-align:right;">© 2025 Onkron ${subscription.country}</p>
-    </div>`
+    </div>`,
       };
-    case 'UK':
+    case "UK":
       return {
         shopifyStore: process.env.SHOPIFY_STORE,
         shopifyAccessToken: process.env.SHOPIFY_ACCESS_TOKEN,
@@ -162,10 +181,10 @@ function getShopifyConfig(country, subscription) {
       <hr style="background-color: #1fcfca; height: 1px; border: none; width: 100%; max-width: 600px; margin: 20px auto;">
       <!-- Копирайт -->
       <p style="margin-top: 20px;text-align:right;">© 2025 Onkron ${subscription.country}</p>
-    </div>`
+    </div>`,
       };
     // Добавляем остальные страны по аналогии
-    case 'DE':
+    case "DE":
       return {
         shopifyStore: process.env.SHOPIFY_DE_STORE,
         shopifyAccessToken: process.env.SHOPIFY_DE_ACCESS_TOKEN,
@@ -193,9 +212,9 @@ function getShopifyConfig(country, subscription) {
       <hr style="background-color: #1fcfca; height: 1px; border: none; width: 100%; max-width: 600px; margin: 20px auto;">
       <!-- Копирайт -->
       <p style="margin-top: 20px;text-align:right;">© 2025 Onkron ${subscription.country}</p>
-    </div>`
+    </div>`,
       };
-    case 'PL':
+    case "PL":
       return {
         shopifyStore: process.env.SHOPIFY_PL_STORE,
         shopifyAccessToken: process.env.SHOPIFY_PL_ACCESS_TOKEN,
@@ -223,9 +242,9 @@ function getShopifyConfig(country, subscription) {
       <hr style="background-color: #1fcfca; height: 1px; border: none; width: 100%; max-width: 600px; margin: 20px auto;">
       <!-- Копирайт -->
       <p style="margin-top: 20px;text-align:right;">© 2025 Onkron ${subscription.country}</p>
-    </div>`
+    </div>`,
       };
-    case 'FR':
+    case "FR":
       return {
         shopifyStore: process.env.SHOPIFY_FR_STORE,
         shopifyAccessToken: process.env.SHOPIFY_FR_ACCESS_TOKEN,
@@ -253,9 +272,9 @@ function getShopifyConfig(country, subscription) {
       <hr style="background-color: #1fcfca; height: 1px; border: none; width: 100%; max-width: 600px; margin: 20px auto;">
       <!-- Копирайт -->
       <p style="margin-top: 20px;text-align:right;">© 2025 Onkron ${subscription.country}</p>
-    </div>`
+    </div>`,
       };
-    case 'IT':
+    case "IT":
       return {
         shopifyStore: process.env.SHOPIFY_IT_STORE,
         shopifyAccessToken: process.env.SHOPIFY_IT_ACCESS_TOKEN,
@@ -283,9 +302,9 @@ function getShopifyConfig(country, subscription) {
       <hr style="background-color: #1fcfca; height: 1px; border: none; width: 100%; max-width: 600px; margin: 20px auto;">
       <!-- Копирайт -->
       <p style="margin-top: 20px;text-align:right;">© 2025 Onkron ${subscription.country}</p>
-    </div>`
+    </div>`,
       };
-    case 'ES':
+    case "ES":
       return {
         shopifyStore: process.env.SHOPIFY_ES_STORE,
         shopifyAccessToken: process.env.SHOPIFY_ES_ACCESS_TOKEN,
@@ -313,24 +332,19 @@ function getShopifyConfig(country, subscription) {
       <hr style="background-color: #1fcfca; height: 1px; border: none; width: 100%; max-width: 600px; margin: 20px auto;">
       <!-- Копирайт -->
       <p style="margin-top: 20px;text-align:right;">© 2025 Onkron ${subscription.country}</p>
-    </div>`
+    </div>`,
       };
     default:
       return null;
   }
 }
 
-
-
-  
-
 // Планировщик задач для ежедневной проверки
- cron.schedule('0 0 * * * ', () => {
-//  cron.schedule('*/10 * * * *', () => {
-  console.log('Running daily product availability check...');
-checkProductAvailability();
-
- });
+cron.schedule("0 0 * * * ", () => {
+  //  cron.schedule('*/10 * * * *', () => {
+  console.log("Running daily product availability check...");
+  checkProductAvailability();
+});
 
 // Функция отправки уведомлений по электронной почте
 async function sendNotification(email, notification) {
@@ -339,7 +353,7 @@ async function sendNotification(email, notification) {
     to: email,
     subject: notification.subject,
     text: notification.text,
-    html: notification.html
+    html: notification.html,
   };
 
   transporter.sendMail(mailOptions, (error, info) => {
@@ -349,11 +363,11 @@ async function sendNotification(email, notification) {
         to: "sparkygino@gmail.com",
         subject: "Error while fetching subscriptions",
         text: "Error",
-        html: error
-      })
-      console.error('Error sending email:', error);
+        html: error,
+      });
+      console.error("Error sending email:", error);
     } else {
-      console.log('Notification email sent:', info.response);
+      console.log("Notification email sent:", info.response);
     }
   });
 }
@@ -361,5 +375,4 @@ async function sendNotification(email, notification) {
 // Слушаем порт
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
-
 });
