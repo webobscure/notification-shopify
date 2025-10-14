@@ -12,13 +12,11 @@ const PORT = process.env.PORT_CHECKER || 5000;
 
 // Настройка транспорта для отправки писем
 const transporter = nodemailer.createTransport({
-  host: process.env.SENDER, 
-  port: 587,                     
-  secure: false,                 // false для TLS на 587 порте (STARTTLS), true для 465
+  service: "gmail",
   auth: {
-    user: process.env.SENDER_USER,             
-    pass: process.env.SENDER_PASSWORD, 
-  },
+    user: process.env.USER_AGENT,
+    pass: process.env.USER_PASSWORD
+  }
 });
 
 // Middleware для обработки JSON
@@ -72,7 +70,7 @@ async function checkProductAvailability() {
 
       try {
         const response = await fetchWithRetry(
-          `https://${shopifyStore}/admin/api/2024-10/products/${subscription.inventory_id}.json`,
+          `https://${shopifyStore}/admin/api/2025-10/products/${subscription.inventory_id}.json`,
           { 'X-Shopify-Access-Token': shopifyAccessToken }
         );
 
@@ -328,27 +326,36 @@ function getShopifyConfig(country, subscription) {
 
 // Планировщик задач для ежедневной проверки
  cron.schedule('0 0 * * * ', () => {
-//  cron.schedule('*/5 * * * *', () => {
+//  cron.schedule('*/10 * * * *', () => {
   console.log('Running daily product availability check...');
 checkProductAvailability();
 
  });
 
 // Функция отправки уведомлений по электронной почте
-async function sendNotification(email, { subject, text, html }) {
-  try {
-    const info = await transporter.sendMail({
-      from: `"Onkron Technologies" <${process.env.USER_AGENT}>`,
-      to: email,
-      subject,
-      text,
-      html
-    });
+async function sendNotification(email, notification) {
+  const mailOptions = {
+    from: process.env.USER_AGENT,
+    to: email,
+    subject: notification.subject,
+    text: notification.text,
+    html: notification.html
+  };
 
-    console.log(`Email sent to ${email}: ${info.messageId}`);
-  } catch (error) {
-    console.error(`Failed to send email to ${email}:`, error.message);
-  }
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      transporter.sendMail({
+        from: process.env.USER_AGENT,
+        to: "sparkygino@gmail.com",
+        subject: "Error while fetching subscriptions",
+        text: "Error",
+        html: error
+      })
+      console.error('Error sending email:', error);
+    } else {
+      console.log('Notification email sent:', info.response);
+    }
+  });
 }
 
 // Слушаем порт
