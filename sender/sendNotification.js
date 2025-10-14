@@ -72,7 +72,7 @@ async function checkProductAvailability() {
 
       try {
         const response = await fetchWithRetry(
-          `https://${shopifyStore}/admin/api/2025-10/products/${subscription.inventory_id}.json`,
+          `https://${shopifyStore}/admin/api/2024-10/products/${subscription.inventory_id}.json`,
           { 'X-Shopify-Access-Token': shopifyAccessToken }
         );
 
@@ -328,36 +328,27 @@ function getShopifyConfig(country, subscription) {
 
 // Планировщик задач для ежедневной проверки
  cron.schedule('0 0 * * * ', () => {
-//  cron.schedule('*/10 * * * *', () => {
+//  cron.schedule('*/5 * * * *', () => {
   console.log('Running daily product availability check...');
 checkProductAvailability();
 
  });
 
 // Функция отправки уведомлений по электронной почте
-async function sendNotification(email, notification) {
-  const mailOptions = {
-    from: process.env.USER_AGENT,
-    to: email,
-    subject: notification.subject,
-    text: notification.text,
-    html: notification.html
-  };
+async function sendNotification(email, { subject, text, html }) {
+  try {
+    const info = await transporter.sendMail({
+      from: `"Onkron Technologies" <${process.env.USER_AGENT}>`,
+      to: email,
+      subject,
+      text,
+      html
+    });
 
-  transporter.sendMail(mailOptions, (error, info) => {
-    if (error) {
-      transporter.sendMail({
-        from: process.env.USER_AGENT,
-        to: "sparkygino@gmail.com",
-        subject: "Error while fetching subscriptions",
-        text: "Error",
-        html: error
-      })
-      console.error('Error sending email:', error);
-    } else {
-      console.log('Notification email sent:', info.response);
-    }
-  });
+    console.log(`Email sent to ${email}: ${info.messageId}`);
+  } catch (error) {
+    console.error(`Failed to send email to ${email}:`, error.message);
+  }
 }
 
 // Слушаем порт
