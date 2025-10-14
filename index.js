@@ -5,12 +5,31 @@ const sequelize = require("./config/database");
 const Subscription = require("./models/Subscription");
 const app = express();
 const PORT = process.env.PORT || 3000;
-const { Op, fn, col, literal } = require('sequelize');
+const { Op, fn, col, literal } = require("sequelize");
 const fs = require("fs");
 const path = require("path");
 
-// const postmark = require("postmark");
-// const client = new postmark.ServerClient(process.env.POSTMARK_API_TOKEN);
+const postmark = require("postmark");
+const client = new postmark.ServerClient(process.env.POSTMARK_API_TOKEN);
+
+export async function sendEmail({ to, subject, html, text }) {
+  try {
+    const response = await client.sendEmail({
+      From: process.env.FROM_EMAIL,
+      To: to,
+      Subject: subject,
+      HtmlBody: html,
+      TextBody: text,
+      MessageStream: "outbound", // стандартный transactional stream
+    });
+
+    console.log("✅ Email sent:", response.MessageID);
+    return response;
+  } catch (error) {
+    console.error("❌ Error sending email:", error.message);
+    throw error;
+  }
+}
 
 sequelize
   .sync({ alter: true })
@@ -27,17 +46,14 @@ const transporter = nodemailer.createTransport({
   secure: false,
   auth: {
     user: process.env.POSTMARK_API_TOKEN,
-    pass: process.env.POSTMARK_API_TOKEN
+    pass: process.env.POSTMARK_API_TOKEN,
   },
-  debug: true
+  debug: true,
 });
 
 // middleware for json
 app.use(express.json());
 app.use(cors());
-
-
-
 
 app.post("/send-notification", async (req, res) => {
   const { email, sku, nickname, inventory_id, country } = req.body;
@@ -100,9 +116,9 @@ app.post("/send-notification", async (req, res) => {
         return {
           shopifyStore: process.env.SHOPIFY_STORE,
           shopifyAccessToken: process.env.SHOPIFY_ACCESS_TOKEN,
-            subject: "Product Notification",
-            text: "Simplify Your Life with Our Product Subscription!",
-            html: `<div style="font-family: Gilroy, Arial, sans-serif; text-align: center; width: 100%; max-width: 600px; margin: 0 auto;">
+          subject: "Product Notification",
+          text: "Simplify Your Life with Our Product Subscription!",
+          html: `<div style="font-family: Gilroy, Arial, sans-serif; text-align: center; width: 100%; max-width: 600px; margin: 0 auto;">
         <!-- Логотип -->
         <img src="https://cdn.shopify.com/s/files/1/0558/2277/8562/files/logo.png?v=1622659938" alt="onkron" width="300" style="display: block; margin: 0 auto;"/>
     
@@ -151,9 +167,9 @@ app.post("/send-notification", async (req, res) => {
         return {
           shopifyStore: process.env.SHOPIFY_DE_STORE,
           shopifyAccessToken: process.env.SHOPIFY_DE_ACCESS_TOKEN,
-            subject: "Produktbenachrichtigung",
-            text: "Vereinfachen Sie Ihr Leben mit unserem Produktabonnement!",
-            html: `<div style="font-family: Gilroy, Arial, sans-serif; text-align: center; width: 100%; max-width: 600px; margin: 0 auto;">
+          subject: "Produktbenachrichtigung",
+          text: "Vereinfachen Sie Ihr Leben mit unserem Produktabonnement!",
+          html: `<div style="font-family: Gilroy, Arial, sans-serif; text-align: center; width: 100%; max-width: 600px; margin: 0 auto;">
         <!-- Логотип -->
         <img src="https://cdn.shopify.com/s/files/1/0558/2277/8562/files/logo.png?v=1622659938" alt="onkron" width="300" style="display: block; margin: 0 auto;"/>
     
@@ -201,9 +217,9 @@ app.post("/send-notification", async (req, res) => {
         return {
           shopifyStore: process.env.SHOPIFY_PL_STORE,
           shopifyAccessToken: process.env.SHOPIFY_PL_ACCESS_TOKEN,
-            subject: "Powiadomienie o produkcie",
-            text: "Uprość swoje życie dzięki naszej subskrypcji produktów!",
-            html: `<div style="font-family: Gilroy, Arial, sans-serif; text-align: center; width: 100%; max-width: 600px; margin: 0 auto;">
+          subject: "Powiadomienie o produkcie",
+          text: "Uprość swoje życie dzięki naszej subskrypcji produktów!",
+          html: `<div style="font-family: Gilroy, Arial, sans-serif; text-align: center; width: 100%; max-width: 600px; margin: 0 auto;">
         <!-- Логотип -->
         <img src="https://cdn.shopify.com/s/files/1/0558/2277/8562/files/logo.png?v=1622659938" alt="onkron" width="300" style="display: block; margin: 0 auto;"/>
     
@@ -251,9 +267,9 @@ app.post("/send-notification", async (req, res) => {
         return {
           shopifyStore: process.env.SHOPIFY_FR_STORE,
           shopifyAccessToken: process.env.SHOPIFY_FR_ACCESS_TOKEN,
-            subject: "Notification de produit",
-            text: "Simplifiez-vous la vie avec notre abonnement aux produits!",
-            html: `<div style="font-family: Gilroy, Arial, sans-serif; text-align: center; width: 100%; max-width: 600px; margin: 0 auto;">
+          subject: "Notification de produit",
+          text: "Simplifiez-vous la vie avec notre abonnement aux produits!",
+          html: `<div style="font-family: Gilroy, Arial, sans-serif; text-align: center; width: 100%; max-width: 600px; margin: 0 auto;">
         <!-- Логотип -->
         <img src="https://cdn.shopify.com/s/files/1/0558/2277/8562/files/logo.png?v=1622659938" alt="onkron" width="300" style="display: block; margin: 0 auto;"/>
     
@@ -301,9 +317,9 @@ app.post("/send-notification", async (req, res) => {
         return {
           shopifyStore: process.env.SHOPIFY_IT_STORE,
           shopifyAccessToken: process.env.SHOPIFY_IT_ACCESS_TOKEN,
-            subject: "Notifica del prodotto",
-            text: "Semplificate la vostra vita con il nostro abbonamento ai prodotti!",
-            html: `<div style="font-family: Gilroy, Arial, sans-serif; text-align: center; width: 100%; max-width: 600px; margin: 0 auto;">
+          subject: "Notifica del prodotto",
+          text: "Semplificate la vostra vita con il nostro abbonamento ai prodotti!",
+          html: `<div style="font-family: Gilroy, Arial, sans-serif; text-align: center; width: 100%; max-width: 600px; margin: 0 auto;">
         <!-- Логотип -->
         <img src="https://cdn.shopify.com/s/files/1/0558/2277/8562/files/logo.png?v=1622659938" alt="onkron" width="300" style="display: block; margin: 0 auto;"/>
     
@@ -351,9 +367,9 @@ app.post("/send-notification", async (req, res) => {
         return {
           shopifyStore: process.env.SHOPIFY_ES_STORE,
           shopifyAccessToken: process.env.SHOPIFY_ES_ACCESS_TOKEN,
-            subject: "Notificación del producto",
-            text: "¡Simplifique su vida con nuestra suscripción de productos!",
-            html: `<div style="font-family: Gilroy, Arial, sans-serif; text-align: center; width: 100%; max-width: 600px; margin: 0 auto;">
+          subject: "Notificación del producto",
+          text: "¡Simplifique su vida con nuestra suscripción de productos!",
+          html: `<div style="font-family: Gilroy, Arial, sans-serif; text-align: center; width: 100%; max-width: 600px; margin: 0 auto;">
         <!-- Логотип -->
         <img src="https://cdn.shopify.com/s/files/1/0558/2277/8562/files/logo.png?v=1622659938" alt="onkron" width="300" style="display: block; margin: 0 auto;"/>
     
@@ -406,6 +422,33 @@ app.post("/send-notification", async (req, res) => {
 
   const { subject, text, html } = shopifyConfig;
 
+  try {
+    const response = await axios.post(
+      "https://api.postmarkapp.com/email",
+      {
+        From: "office@onkron.com", // Укажи реальный домен, зарегистрированный в Postmark
+        To: email,
+        Subject: shopifyConfig.subject,
+        HtmlBody: shopifyConfig.html,
+        TextBody: shopifyConfig.text,
+        MessageStream: "outbound", // стандартный поток
+      },
+      {
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/json",
+          "X-Postmark-Server-Token": process.env.POSTMARK_API_KEY,
+        },
+      }
+    );
+
+    console.log("Email sent successfully:", response.data);
+    res.status(200).json({ success: true, message: "Email sent successfully" });
+  } catch (error) {
+    console.error("Error sending email via Postmark:", error.response?.data || error.message);
+    res.status(500).json({ success: false, error: "Failed to send email" });
+  }
+
   const mailOptions = {
     from: process.env.USER_AGENT,
     to: email,
@@ -434,6 +477,8 @@ app.post("/send-notification", async (req, res) => {
     await subscription.save();
     console.log("Subscription saved:", subscription); // Логирование сохраненной подписки
 
+   
+
     transporter.sendMail(mailOptions, (error, info) => {
       if (error) {
         console.error("Error sending email:", error);
@@ -449,9 +494,7 @@ app.post("/send-notification", async (req, res) => {
 });
 app.get("/check-subscription", async (req, res) => {
   try {
-    const [results] = await sequelize.query(
-      "SELECT * FROM notifications"
-    );
+    const [results] = await sequelize.query("SELECT * FROM notifications");
     res.status(200).json(results);
   } catch (error) {
     console.error("Error checking subscriptions:", error);
@@ -462,13 +505,9 @@ app.get("/check-subscription", async (req, res) => {
 app.get("/subscription-stats", async (req, res) => {
   try {
     const subscriptions = await Subscription.findAll({
-      attributes: [
-        'country',
-        'sku',
-        [fn('COUNT', col('sku')), 'total_count']
-      ],
-      group: ['country', 'sku'],
-      order: [[literal('total_count'), 'DESC']],
+      attributes: ["country", "sku", [fn("COUNT", col("sku")), "total_count"]],
+      group: ["country", "sku"],
+      order: [[literal("total_count"), "DESC"]],
       raw: true,
     });
 
@@ -477,7 +516,7 @@ app.get("/subscription-stats", async (req, res) => {
     // Группируем по стране
     const statsByCountry = {};
     for (const item of subscriptions) {
-      const country = item.country || 'Unknown';
+      const country = item.country || "Unknown";
       if (!statsByCountry[country]) statsByCountry[country] = [];
       statsByCountry[country].push(item);
     }
@@ -491,11 +530,12 @@ app.get("/subscription-stats", async (req, res) => {
 
       const rows = Math.ceil(entries.length / columnCount);
       for (let row = 0; row < rows; row++) {
-        let line = '';
+        let line = "";
         for (let col = 0; col < columnCount; col++) {
           const index = row + col * rows;
           if (index < entries.length) {
-            const entry = `${entries[index].sku}: ${entries[index].total_count}`.padEnd(25);
+            const entry =
+              `${entries[index].sku}: ${entries[index].total_count}`.padEnd(25);
             line += entry;
           }
         }
@@ -503,23 +543,21 @@ app.get("/subscription-stats", async (req, res) => {
       }
     }
 
-    const formattedText = lines.join('\n');
+    const formattedText = lines.join("\n");
 
-    res.setHeader('Content-Type', 'text/plain');
+    res.setHeader("Content-Type", "text/plain");
     res.status(200).send(formattedText);
-
   } catch (error) {
     console.error("Error getting subscription statistics:", error);
     res.status(500).send("Ошибка при получении статистики подписок");
   }
 });
 
-
-
-
 app.get("/all-subs", async (req, res) => {
-try {
-    const [results] = await sequelize.query("SELECT sku, country FROM notifications");
+  try {
+    const [results] = await sequelize.query(
+      "SELECT sku, country FROM notifications"
+    );
 
     if (!results.length) {
       return res.status(200).send("Нет подписок.");
@@ -533,7 +571,10 @@ try {
     }
 
     // Формирование CSV
-    const csvLines = ["SKU;Country", ...results.map(({ sku, country }) => `${sku};${country}`)];
+    const csvLines = [
+      "SKU;Country",
+      ...results.map(({ sku, country }) => `${sku};${country}`),
+    ];
     const csvContent = csvLines.join("\n");
     const filePath = path.join(__dirname, "subscription_stats.csv");
     fs.writeFileSync(filePath, csvContent, "utf-8");
@@ -542,7 +583,10 @@ try {
     const countryTables = Object.entries(countryMap).map(([country, skus]) => {
       const rows = [];
       for (let i = 0; i < skus.length; i += 4) {
-        const row = skus.slice(i, i + 4).map(sku => `<td>${sku} - ${country}</td>`).join("");
+        const row = skus
+          .slice(i, i + 4)
+          .map((sku) => `<td>${sku} - ${country}</td>`)
+          .join("");
         rows.push(`<tr>${row}</tr>`);
       }
 
