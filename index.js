@@ -9,7 +9,8 @@ const { Op, fn, col, literal } = require("sequelize");
 const fs = require("fs");
 const path = require("path");
 const axios = require('axios');
-const fetch = require('node-fetch');
+const fetch = (...args) => import("node-fetch").then(({ default: fetch }) => fetch(...args));
+
 
 const postmark = require("postmark");
 const client = new postmark.ServerClient(process.env.POSTMARK_API_TOKEN);
