@@ -8,6 +8,10 @@ const PORT = process.env.PORT || 3000;
 const { Op, fn, col, literal } = require('sequelize');
 const fs = require("fs");
 const path = require("path");
+
+// const postmark = require("postmark");
+// const client = new postmark.ServerClient(process.env.POSTMARK_API_TOKEN);
+
 sequelize
   .sync({ alter: true })
   .then(() => {
@@ -18,15 +22,13 @@ sequelize
   });
 
 const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
+  host: "smtp.postmarkapp.com",
   port: 587,
   secure: false,
   auth: {
-    user: process.env.USER_AGENT,
-    pass: process.env.USER_PASSWORD,
+    user: process.env.POSTMARK_API_TOKEN,
+    pass: process.env.POSTMARK_API_TOKEN
   },
-  requireTLS: true,
-  logger: true,
   debug: true
 });
 
