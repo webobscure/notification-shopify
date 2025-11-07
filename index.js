@@ -431,7 +431,7 @@ app.post("/send-notification", async (req, res) => {
     await subscription.save();
     console.log("Subscription saved:", subscription); // Логирование сохраненной подписки
 
-    
+     
     const resend = new Resend(process.env.RESEND_API_TOKEN);
     resend.emails.send({
       from: 'onboarding@resend.dev',
