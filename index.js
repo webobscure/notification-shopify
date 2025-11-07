@@ -8,6 +8,8 @@ const PORT = process.env.PORT || 3000;
 const { Op, fn, col, literal } = require('sequelize');
 const fs = require("fs");
 const path = require("path");
+const Resend = require("resend");
+
 sequelize
   .sync({ alter: true })
   .then(() => {
