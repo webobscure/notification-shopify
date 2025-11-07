@@ -19,7 +19,12 @@ sequelize
 app.use(express.json());
 app.use(cors());
 
-// Функция для получения конфигурации Shopify в зависимости от страны
+
+
+app.post("/send-notification", async (req, res) => {
+  const { email, sku, nickname, inventory_id, country } = req.body;
+
+  // Функция для получения конфигурации Shopify в зависимости от страны
 function getShopifyConfig(country) {
   switch (country) {
     case "US":
@@ -377,9 +382,6 @@ function getShopifyConfig(country) {
       return null;
   }
 }
-
-app.post("/send-notification", async (req, res) => {
-  const { email, sku, nickname, inventory_id, country } = req.body;
 
   try {
     // Создаём или обновляем запись в БД
