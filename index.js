@@ -8,6 +8,11 @@ const { Resend } = require("resend");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+if (!process.env.RESEND_API_TOKEN) {
+  console.error('❌ RESEND_API_TOKEN is not set');
+  return;
+}
+
 const resend = new Resend(process.env.RESEND_API_TOKEN);
 
 // Синхронизация базы

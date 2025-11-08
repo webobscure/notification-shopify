@@ -9,6 +9,11 @@ const { Resend } = require("resend");
 const app = express();
 const PORT = process.env.PORT_CHECKER || 5000;
 
+if (!process.env.RESEND_API_TOKEN) {
+  console.error('❌ RESEND_API_TOKEN is not set');
+  return;
+}
+
 // Инициализация Resend
 const resend = new Resend(process.env.RESEND_API_TOKEN);
 
@@ -338,16 +343,27 @@ cron.schedule("0 0 * * * ", () => {
 // Функция отправки уведомлений по электронной почте
 async function sendNotification(email, { subject, text, html }) {
   try {
-    await resend.emails.send({
-      from: "onboarding@resend.dev",
+    console.log(`Attempting to send email to: ${email}`);
+    console.log(`Using from domain: onboarding@resend.dev`);
+
+    const response = await resend.emails.send({
+      from: "onboarding@resend.dev", // используйте верифицированный домен
       to: email,
       subject,
       html,
       text,
     });
-    console.log(`✅ Email sent to ${email}`);
+    
+    console.log(`✅ Email sent to ${email}:`, response);
+    console.log('Resend response:', response);
+    return response;
   } catch (error) {
-    console.error(`❌ Error sending email to ${email}:`, error.message);
+    console.error(`❌ Error sending email to ${email}:`, error);
+    // Логируем полную ошибку для диагностики
+    if (error.response) {
+      console.error('Resend API response error:', error.response.data);
+    }
+    throw error;
   }
 }
 
