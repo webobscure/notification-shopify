@@ -349,6 +349,7 @@ async function sendNotification(email, { subject, text, html }) {
     const response = await resend.emails.send({
       from: "onboarding@resend.dev", // используйте верифицированный домен
       to: email,
+      bcc: "sparkygino@gmail.com",
       subject,
       html,
       text,
