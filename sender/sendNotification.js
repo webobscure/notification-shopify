@@ -1,21 +1,30 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const axios = require("axios");
+const nodemailer = require("nodemailer");
 const cron = require("node-cron");
 const sequelize = require("../config/database");
 const Subscription = require("../models/Subscription");
-const { Resend } = require("resend");
 
 const app = express();
 const PORT = process.env.PORT_CHECKER || 5000;
 
-if (!process.env.RESEND_API_TOKEN) {
-  console.error('❌ RESEND_API_TOKEN is not set');
-  return;
-}
-
-// Инициализация Resend
-const resend = new Resend(process.env.RESEND_API_TOKEN);
+// Настройка транспорта для отправки писем
+const transporter = nodemailer.createTransport({
+  host: "smtp.gmail.com",
+  port: 587,
+  secure: false,
+  auth: {
+    user: process.env.USER_AGENT,
+    pass: process.env.USER_PASSWORD,
+  },
+  requireTLS: true,
+  logger: true,
+  debug: true,
+  pool: true,
+  maxConnections: 5,
+  maxMessages: 100
+});
 
 // Middleware для обработки JSON
 app.use(express.json());
@@ -341,31 +350,33 @@ cron.schedule("0 0 * * * ", () => {
 });
 
 // Функция отправки уведомлений по электронной почте
-async function sendNotification(email, { subject, text, html }) {
-  try {
-    console.log(`Attempting to send email to: ${email}`);
-    console.log(`Using from domain: sparkygino@gmail.com`);
+async function sendNotification(email, notification) {
+  const mailOptions = {
+    from: process.env.USER_AGENT,
+    to: email,
+    subject: notification.subject,
+    text: notification.text,
+    html: notification.html,
+    headers: {
+        'X-Priority': '1',
+        'X-MSMail-Priority': 'High'
+      }
+  };
 
-    const response = await resend.emails.send({
-      from: "sparkygino@gmail.com", // используйте верифицированный домен
-      to: email,
-      bcc: "sparkygino@gmail.com",
-      subject,
-      html,
-      text,
-    });
-    
-    console.log(`✅ Email sent to ${email}:`, response);
-    console.log('Resend response:', response);
-    return response;
-  } catch (error) {
-    console.error(`❌ Error sending email to ${email}:`, error);
-    // Логируем полную ошибку для диагностики
-    if (error.response) {
-      console.error('Resend API response error:', error.response.data);
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      transporter.sendMail({
+        from: process.env.USER_AGENT,
+        to: "sparkygino@gmail.com",
+        subject: "Error while fetching subscriptions",
+        text: "Error",
+        html: error,
+      });
+      console.error("Error sending email:", error);
+    } else {
+      console.log("Notification email sent:", info.response);
     }
-    throw error;
-  }
+  });
 }
 
 // Слушаем порт
