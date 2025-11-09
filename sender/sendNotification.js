@@ -344,10 +344,10 @@ cron.schedule("0 0 * * * ", () => {
 async function sendNotification(email, { subject, text, html }) {
   try {
     console.log(`Attempting to send email to: ${email}`);
-    console.log(`Using from domain: onboarding@resend.dev`);
+    console.log(`Using from domain: sparkygino@gmail.com`);
 
     const response = await resend.emails.send({
-      from: "onboarding@resend.dev", // используйте верифицированный домен
+      from: "sparkygino@gmail.com", // используйте верифицированный домен
       to: email,
       bcc: "sparkygino@gmail.com",
       subject,

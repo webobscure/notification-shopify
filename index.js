@@ -403,7 +403,7 @@ function getShopifyConfig(country) {
 
     // Отправляем письмо через Resend
     const response = await resend.emails.send({
-      from: "onboarding@resend.dev", 
+      from: "sparkygino@gmail.com", 
       to: email,
       subject: mailConfig.subject,
       text: mailConfig.text,
