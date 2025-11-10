@@ -30,77 +30,68 @@ oAuth2Client.setCredentials({
   refresh_token: process.env.GMAIL_REFRESH_TOKEN,
 });
 
-// Функция для создания транспорта Gmail API
-async function createTransporter() {
-  try {
-    const accessToken = await oAuth2Client.getAccessToken();
-
-    if (!accessToken.token) {
-      throw new Error("Failed to get access token");
-    }
-
-    return nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        type: "OAuth2",
-        user: process.env.GMAIL_EMAIL,
-        clientId: process.env.GMAIL_CLIENT_ID,
-        clientSecret: process.env.GMAIL_CLIENT_SECRET,
-        refreshToken: process.env.GMAIL_REFRESH_TOKEN,
-        accessToken: accessToken.token,
-      },
-    });
-  } catch (error) {
-    console.error("Error creating Gmail transporter:", error);
-    throw error;
-  }
-}
-
-// Универсальная функция отправки email
-async function sendEmail(email, { subject, text, html }) {
-  let transporter;
-
+// Функция для отправки email через прямое Gmail API (без SMTP)
+async function sendEmailDirect(email, { subject, text, html }) {
   try {
     console.log(`📧 Attempting to send email to: ${email}`);
 
-    transporter = await createTransporter();
+    // Получаем актуальный access token
+    const { token } = await oAuth2Client.getAccessToken();
+    if (!token) {
+      throw new Error("Failed to get access token");
+    }
 
-    const mailOptions = {
-      from: {
-        name: "Onkron Notifications",
-        address: process.env.GMAIL_EMAIL,
-      },
-      to: email,
-      subject: subject,
-      html: html,
-      text: text,
-    };
+    // Создаем Gmail клиент
+    const gmail = google.gmail({ version: 'v1', auth: oAuth2Client });
 
-    const result = await transporter.sendMail(mailOptions);
-    console.log(`✅ Email sent successfully to ${email}`);
-    console.log(`📫 Message ID: ${result.messageId}`);
+    // Формируем email в формате RFC 5322
+    const message = [
+      'Content-Type: text/html; charset="UTF-8"\r\n',
+      'MIME-Version: 1.0\r\n',
+      'Content-Transfer-Encoding: 7bit\r\n',
+      `to: ${email}\r\n`,
+      `subject: ${subject}\r\n`,
+      `from: Onkron Notifications <${process.env.GMAIL_EMAIL}>\r\n`,
+      '\r\n',
+      html
+    ].join('');
 
-    return result;
-  } catch (error) {
-    console.error(`❌ Failed to send email to ${email}:`, {
-      message: error.message,
-      code: error.code,
+    // Кодируем сообщение в base64
+    const encodedMessage = Buffer.from(message)
+      .toString('base64')
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/=+$/, '');
+
+    // Отправляем через Gmail API
+    const response = await gmail.users.messages.send({
+      userId: 'me',
+      requestBody: {
+        raw: encodedMessage
+      }
     });
 
-    // Перегенерируем токен при ошибке аутентификации
-    if (error.code === "EAUTH" && transporter) {
+    console.log(`✅ Email sent successfully to ${email}`);
+    console.log(`📫 Message ID: ${response.data.id}`);
+    
+    return response.data;
+  } catch (error) {
+    console.error(`❌ Failed to send email to ${email}:`, error.message);
+    
+    // Если ошибка аутентификации, пробуем обновить токен
+    if (error.code === 401) {
       console.log("🔄 Refreshing access token...");
       try {
         const { credentials } = await oAuth2Client.refreshAccessToken();
         oAuth2Client.setCredentials(credentials);
         console.log("✅ Access token refreshed");
         // Повторяем отправку
-        return await sendEmail(email, { subject, text, html });
+        return await sendEmailDirect(email, { subject, text, html });
       } catch (refreshError) {
         console.error("❌ Failed to refresh access token:", refreshError);
       }
     }
-
+    
     throw error;
   }
 }
@@ -108,10 +99,13 @@ async function sendEmail(email, { subject, text, html }) {
 // Тестирование соединения при старте
 async function testGmailConnection() {
   try {
-    const transporter = await createTransporter();
-    await transporter.verify();
-    console.log("✅ Gmail API connection successful");
-    return true;
+    const { token } = await oAuth2Client.getAccessToken();
+    if (token) {
+      console.log("✅ Gmail API connection successful");
+      return true;
+    } else {
+      throw new Error("No access token");
+    }
   } catch (error) {
     console.error("❌ Gmail API connection failed:", error);
     return false;
@@ -525,7 +519,7 @@ app.post("/send-notification", async (req, res) => {
     console.log("Subscription saved:", subscription); // Логирование сохраненной подписки
 
      // Отправляем email через Gmail API
-     await sendEmail(email, { subject, text, html });
+     await sendEmailDirect(email, { subject, text, html });
 
      res.status(200).json({ message: "Email sent successfully" });
   } catch (error) {
