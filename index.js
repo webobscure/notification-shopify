@@ -1,11 +1,12 @@
 const express = require("express");
 const nodemailer = require("nodemailer");
+const { google } = require("googleapis");
 const cors = require("cors");
 const sequelize = require("./config/database");
 const Subscription = require("./models/Subscription");
 const app = express();
 const PORT = process.env.PORT || 3000;
-const { Op, fn, col, literal } = require('sequelize');
+const { Op, fn, col, literal } = require("sequelize");
 const fs = require("fs");
 const path = require("path");
 sequelize
@@ -17,30 +18,112 @@ sequelize
     console.error("Error synchronizing database:", err);
   });
 
-const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 587,
-  secure: false, 
-  auth: {
-    user: process.env.USER_AGENT,
-    pass: process.env.USER_PASSWORD,
-  },
-  tls: {
-    rejectUnauthorized: false // может помочь с SSL ошибками
-  },
-  logger: true,
-  debug: true,
-  pool: true,
-  maxConnections: 5,
-  maxMessages: 100
+// Создаем OAuth2 клиент
+const oAuth2Client = new google.auth.OAuth2(
+  process.env.GMAIL_CLIENT_ID,
+  process.env.GMAIL_CLIENT_SECRET,
+  process.env.GMAIL_REDIRECT_URI
+);
+
+// Устанавливаем credentials
+oAuth2Client.setCredentials({
+  refresh_token: process.env.GMAIL_REFRESH_TOKEN,
 });
+
+// Функция для создания транспорта Gmail API
+async function createTransporter() {
+  try {
+    const accessToken = await oAuth2Client.getAccessToken();
+
+    if (!accessToken.token) {
+      throw new Error("Failed to get access token");
+    }
+
+    return nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        type: "OAuth2",
+        user: process.env.GMAIL_EMAIL,
+        clientId: process.env.GMAIL_CLIENT_ID,
+        clientSecret: process.env.GMAIL_CLIENT_SECRET,
+        refreshToken: process.env.GMAIL_REFRESH_TOKEN,
+        accessToken: accessToken.token,
+      },
+    });
+  } catch (error) {
+    console.error("Error creating Gmail transporter:", error);
+    throw error;
+  }
+}
+
+// Универсальная функция отправки email
+async function sendEmail(email, { subject, text, html }) {
+  let transporter;
+
+  try {
+    console.log(`📧 Attempting to send email to: ${email}`);
+
+    transporter = await createTransporter();
+
+    const mailOptions = {
+      from: {
+        name: "Onkron Notifications",
+        address: process.env.GMAIL_EMAIL,
+      },
+      to: email,
+      subject: subject,
+      html: html,
+      text: text,
+    };
+
+    const result = await transporter.sendMail(mailOptions);
+    console.log(`✅ Email sent successfully to ${email}`);
+    console.log(`📫 Message ID: ${result.messageId}`);
+
+    return result;
+  } catch (error) {
+    console.error(`❌ Failed to send email to ${email}:`, {
+      message: error.message,
+      code: error.code,
+    });
+
+    // Перегенерируем токен при ошибке аутентификации
+    if (error.code === "EAUTH" && transporter) {
+      console.log("🔄 Refreshing access token...");
+      try {
+        const { credentials } = await oAuth2Client.refreshAccessToken();
+        oAuth2Client.setCredentials(credentials);
+        console.log("✅ Access token refreshed");
+        // Повторяем отправку
+        return await sendEmail(email, { subject, text, html });
+      } catch (refreshError) {
+        console.error("❌ Failed to refresh access token:", refreshError);
+      }
+    }
+
+    throw error;
+  }
+}
+
+// Тестирование соединения при старте
+async function testGmailConnection() {
+  try {
+    const transporter = await createTransporter();
+    await transporter.verify();
+    console.log("✅ Gmail API connection successful");
+    return true;
+  } catch (error) {
+    console.error("❌ Gmail API connection failed:", error);
+    return false;
+  }
+}
+
+// Запускаем тест при старте сервера
+testGmailConnection();
 
 // middleware for json
 app.use(express.json());
 app.use(cors());
-
-
-
 
 app.post("/send-notification", async (req, res) => {
   const { email, sku, nickname, inventory_id, country } = req.body;
@@ -103,9 +186,9 @@ app.post("/send-notification", async (req, res) => {
         return {
           shopifyStore: process.env.SHOPIFY_STORE,
           shopifyAccessToken: process.env.SHOPIFY_ACCESS_TOKEN,
-            subject: "Product Notification",
-            text: "Simplify Your Life with Our Product Subscription!",
-            html: `<div style="font-family: Gilroy, Arial, sans-serif; text-align: center; width: 100%; max-width: 600px; margin: 0 auto;">
+          subject: "Product Notification",
+          text: "Simplify Your Life with Our Product Subscription!",
+          html: `<div style="font-family: Gilroy, Arial, sans-serif; text-align: center; width: 100%; max-width: 600px; margin: 0 auto;">
         <!-- Логотип -->
         <img src="https://cdn.shopify.com/s/files/1/0558/2277/8562/files/logo.png?v=1622659938" alt="onkron" width="300" style="display: block; margin: 0 auto;"/>
     
@@ -154,9 +237,9 @@ app.post("/send-notification", async (req, res) => {
         return {
           shopifyStore: process.env.SHOPIFY_DE_STORE,
           shopifyAccessToken: process.env.SHOPIFY_DE_ACCESS_TOKEN,
-            subject: "Produktbenachrichtigung",
-            text: "Vereinfachen Sie Ihr Leben mit unserem Produktabonnement!",
-            html: `<div style="font-family: Gilroy, Arial, sans-serif; text-align: center; width: 100%; max-width: 600px; margin: 0 auto;">
+          subject: "Produktbenachrichtigung",
+          text: "Vereinfachen Sie Ihr Leben mit unserem Produktabonnement!",
+          html: `<div style="font-family: Gilroy, Arial, sans-serif; text-align: center; width: 100%; max-width: 600px; margin: 0 auto;">
         <!-- Логотип -->
         <img src="https://cdn.shopify.com/s/files/1/0558/2277/8562/files/logo.png?v=1622659938" alt="onkron" width="300" style="display: block; margin: 0 auto;"/>
     
@@ -204,9 +287,9 @@ app.post("/send-notification", async (req, res) => {
         return {
           shopifyStore: process.env.SHOPIFY_PL_STORE,
           shopifyAccessToken: process.env.SHOPIFY_PL_ACCESS_TOKEN,
-            subject: "Powiadomienie o produkcie",
-            text: "Uprość swoje życie dzięki naszej subskrypcji produktów!",
-            html: `<div style="font-family: Gilroy, Arial, sans-serif; text-align: center; width: 100%; max-width: 600px; margin: 0 auto;">
+          subject: "Powiadomienie o produkcie",
+          text: "Uprość swoje życie dzięki naszej subskrypcji produktów!",
+          html: `<div style="font-family: Gilroy, Arial, sans-serif; text-align: center; width: 100%; max-width: 600px; margin: 0 auto;">
         <!-- Логотип -->
         <img src="https://cdn.shopify.com/s/files/1/0558/2277/8562/files/logo.png?v=1622659938" alt="onkron" width="300" style="display: block; margin: 0 auto;"/>
     
@@ -254,9 +337,9 @@ app.post("/send-notification", async (req, res) => {
         return {
           shopifyStore: process.env.SHOPIFY_FR_STORE,
           shopifyAccessToken: process.env.SHOPIFY_FR_ACCESS_TOKEN,
-            subject: "Notification de produit",
-            text: "Simplifiez-vous la vie avec notre abonnement aux produits!",
-            html: `<div style="font-family: Gilroy, Arial, sans-serif; text-align: center; width: 100%; max-width: 600px; margin: 0 auto;">
+          subject: "Notification de produit",
+          text: "Simplifiez-vous la vie avec notre abonnement aux produits!",
+          html: `<div style="font-family: Gilroy, Arial, sans-serif; text-align: center; width: 100%; max-width: 600px; margin: 0 auto;">
         <!-- Логотип -->
         <img src="https://cdn.shopify.com/s/files/1/0558/2277/8562/files/logo.png?v=1622659938" alt="onkron" width="300" style="display: block; margin: 0 auto;"/>
     
@@ -304,9 +387,9 @@ app.post("/send-notification", async (req, res) => {
         return {
           shopifyStore: process.env.SHOPIFY_IT_STORE,
           shopifyAccessToken: process.env.SHOPIFY_IT_ACCESS_TOKEN,
-            subject: "Notifica del prodotto",
-            text: "Semplificate la vostra vita con il nostro abbonamento ai prodotti!",
-            html: `<div style="font-family: Gilroy, Arial, sans-serif; text-align: center; width: 100%; max-width: 600px; margin: 0 auto;">
+          subject: "Notifica del prodotto",
+          text: "Semplificate la vostra vita con il nostro abbonamento ai prodotti!",
+          html: `<div style="font-family: Gilroy, Arial, sans-serif; text-align: center; width: 100%; max-width: 600px; margin: 0 auto;">
         <!-- Логотип -->
         <img src="https://cdn.shopify.com/s/files/1/0558/2277/8562/files/logo.png?v=1622659938" alt="onkron" width="300" style="display: block; margin: 0 auto;"/>
     
@@ -354,9 +437,9 @@ app.post("/send-notification", async (req, res) => {
         return {
           shopifyStore: process.env.SHOPIFY_ES_STORE,
           shopifyAccessToken: process.env.SHOPIFY_ES_ACCESS_TOKEN,
-            subject: "Notificación del producto",
-            text: "¡Simplifique su vida con nuestra suscripción de productos!",
-            html: `<div style="font-family: Gilroy, Arial, sans-serif; text-align: center; width: 100%; max-width: 600px; margin: 0 auto;">
+          subject: "Notificación del producto",
+          text: "¡Simplifique su vida con nuestra suscripción de productos!",
+          html: `<div style="font-family: Gilroy, Arial, sans-serif; text-align: center; width: 100%; max-width: 600px; margin: 0 auto;">
         <!-- Логотип -->
         <img src="https://cdn.shopify.com/s/files/1/0558/2277/8562/files/logo.png?v=1622659938" alt="onkron" width="300" style="display: block; margin: 0 auto;"/>
     
@@ -416,9 +499,9 @@ app.post("/send-notification", async (req, res) => {
     text: text,
     html: html,
     headers: {
-        'X-Priority': '1',
-        'X-MSMail-Priority': 'High'
-      }
+      "X-Priority": "1",
+      "X-MSMail-Priority": "High",
+    },
   };
 
   try {
@@ -441,14 +524,10 @@ app.post("/send-notification", async (req, res) => {
     await subscription.save();
     console.log("Subscription saved:", subscription); // Логирование сохраненной подписки
 
-    transporter.sendMail(mailOptions, (error, info) => {
-      if (error) {
-        console.error("Error sending email:", error);
-        return res.status(500).json({ message: "Error sending email" });
-      }
-      console.log("Email sent:", info.response);
-      res.status(200).json({ message: "Email sent successfully" });
-    });
+     // Отправляем email через Gmail API
+     await sendEmail(email, { subject, text, html });
+
+     res.status(200).json({ message: "Email sent successfully" });
   } catch (error) {
     console.error("Error saving subscription:", error);
     res.status(500).json({ message: "Error saving subscription" });
@@ -456,9 +535,7 @@ app.post("/send-notification", async (req, res) => {
 });
 app.get("/check-subscription", async (req, res) => {
   try {
-    const [results] = await sequelize.query(
-      "SELECT * FROM notifications"
-    );
+    const [results] = await sequelize.query("SELECT * FROM notifications");
     res.status(200).json(results);
   } catch (error) {
     console.error("Error checking subscriptions:", error);
@@ -469,13 +546,9 @@ app.get("/check-subscription", async (req, res) => {
 app.get("/subscription-stats", async (req, res) => {
   try {
     const subscriptions = await Subscription.findAll({
-      attributes: [
-        'country',
-        'sku',
-        [fn('COUNT', col('sku')), 'total_count']
-      ],
-      group: ['country', 'sku'],
-      order: [[literal('total_count'), 'DESC']],
+      attributes: ["country", "sku", [fn("COUNT", col("sku")), "total_count"]],
+      group: ["country", "sku"],
+      order: [[literal("total_count"), "DESC"]],
       raw: true,
     });
 
@@ -484,7 +557,7 @@ app.get("/subscription-stats", async (req, res) => {
     // Группируем по стране
     const statsByCountry = {};
     for (const item of subscriptions) {
-      const country = item.country || 'Unknown';
+      const country = item.country || "Unknown";
       if (!statsByCountry[country]) statsByCountry[country] = [];
       statsByCountry[country].push(item);
     }
@@ -498,11 +571,12 @@ app.get("/subscription-stats", async (req, res) => {
 
       const rows = Math.ceil(entries.length / columnCount);
       for (let row = 0; row < rows; row++) {
-        let line = '';
+        let line = "";
         for (let col = 0; col < columnCount; col++) {
           const index = row + col * rows;
           if (index < entries.length) {
-            const entry = `${entries[index].sku}: ${entries[index].total_count}`.padEnd(25);
+            const entry =
+              `${entries[index].sku}: ${entries[index].total_count}`.padEnd(25);
             line += entry;
           }
         }
@@ -510,23 +584,21 @@ app.get("/subscription-stats", async (req, res) => {
       }
     }
 
-    const formattedText = lines.join('\n');
+    const formattedText = lines.join("\n");
 
-    res.setHeader('Content-Type', 'text/plain');
+    res.setHeader("Content-Type", "text/plain");
     res.status(200).send(formattedText);
-
   } catch (error) {
     console.error("Error getting subscription statistics:", error);
     res.status(500).send("Ошибка при получении статистики подписок");
   }
 });
 
-
-
-
 app.get("/all-subs", async (req, res) => {
-try {
-    const [results] = await sequelize.query("SELECT sku, country FROM notifications");
+  try {
+    const [results] = await sequelize.query(
+      "SELECT sku, country FROM notifications"
+    );
 
     if (!results.length) {
       return res.status(200).send("Нет подписок.");
@@ -540,7 +612,10 @@ try {
     }
 
     // Формирование CSV
-    const csvLines = ["SKU;Country", ...results.map(({ sku, country }) => `${sku};${country}`)];
+    const csvLines = [
+      "SKU;Country",
+      ...results.map(({ sku, country }) => `${sku};${country}`),
+    ];
     const csvContent = csvLines.join("\n");
     const filePath = path.join(__dirname, "subscription_stats.csv");
     fs.writeFileSync(filePath, csvContent, "utf-8");
@@ -549,7 +624,10 @@ try {
     const countryTables = Object.entries(countryMap).map(([country, skus]) => {
       const rows = [];
       for (let i = 0; i < skus.length; i += 4) {
-        const row = skus.slice(i, i + 4).map(sku => `<td>${sku} - ${country}</td>`).join("");
+        const row = skus
+          .slice(i, i + 4)
+          .map((sku) => `<td>${sku} - ${country}</td>`)
+          .join("");
         rows.push(`<tr>${row}</tr>`);
       }
 
